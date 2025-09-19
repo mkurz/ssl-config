@@ -272,6 +272,8 @@ object SSLLooseConfig {
  * @param protocol The SSL protocol to use. Defaults to TLSv1.2.
  * @param checkRevocation Whether revocation lists should be checked, if None, defaults to platform default setting.
  * @param revocationLists The revocation lists to check.
+ * @param enabledCipherSuites If defined, override the platform default cipher suites.
+ * @param enabledProtocols If defined, override the platform default protocols.
  * @param keyManagerConfig The key manager configuration.
  * @param trustManagerConfig The trust manager configuration.
  * @param secureRandom The SecureRandom instance to use. Let the platform choose if None.
@@ -283,6 +285,8 @@ final class SSLConfigSettings private[sslconfig] (
     val protocol: String = "TLSv1.2",
     val checkRevocation: Option[Boolean] = None,
     val revocationLists: Option[immutable.Seq[URL]] = None,
+    val enabledCipherSuites: Option[immutable.Seq[String]] = None,
+    val enabledProtocols: Option[immutable.Seq[String]] = Some(List("TLSv1.2", "TLSv1.1", "TLSv1")),
     val keyManagerConfig: KeyManagerConfig = KeyManagerConfig(),
     val trustManagerConfig: TrustManagerConfig = TrustManagerConfig(),
     val secureRandom: Option[SecureRandom] = None,
@@ -292,6 +296,8 @@ final class SSLConfigSettings private[sslconfig] (
   def withCheckRevocation(value: Option[Boolean]): SSLConfigSettings = copy(checkRevocation = value)
   def withDebug(value: com.typesafe.sslconfig.ssl.SSLDebugConfig): SSLConfigSettings = copy(debug = value)
   def withDefault(value: Boolean): SSLConfigSettings = copy(default = value)
+  def withEnabledCipherSuites(value: Option[scala.collection.immutable.Seq[String]]): SSLConfigSettings = copy(enabledCipherSuites = value)
+  def withEnabledProtocols(value: Option[scala.collection.immutable.Seq[String]]): SSLConfigSettings = copy(enabledProtocols = value)
   def withKeyManagerConfig(value: com.typesafe.sslconfig.ssl.KeyManagerConfig): SSLConfigSettings = copy(keyManagerConfig = value)
   def withLoose(value: com.typesafe.sslconfig.ssl.SSLLooseConfig): SSLConfigSettings = copy(loose = value)
   def withProtocol(value: String): SSLConfigSettings = copy(protocol = value)
@@ -303,6 +309,8 @@ final class SSLConfigSettings private[sslconfig] (
     checkRevocation: Option[Boolean] = checkRevocation,
     debug: com.typesafe.sslconfig.ssl.SSLDebugConfig = debug,
     default: Boolean = default,
+    enabledCipherSuites: Option[scala.collection.immutable.Seq[String]] = enabledCipherSuites,
+    enabledProtocols: Option[scala.collection.immutable.Seq[String]] = enabledProtocols,
     keyManagerConfig: com.typesafe.sslconfig.ssl.KeyManagerConfig = keyManagerConfig,
     loose: com.typesafe.sslconfig.ssl.SSLLooseConfig = loose,
     protocol: String = protocol,
@@ -312,6 +320,8 @@ final class SSLConfigSettings private[sslconfig] (
     checkRevocation = checkRevocation,
     debug = debug,
     default = default,
+    enabledCipherSuites = enabledCipherSuites,
+    enabledProtocols = enabledProtocols,
     keyManagerConfig = keyManagerConfig,
     loose = loose,
     protocol = protocol,
@@ -320,7 +330,7 @@ final class SSLConfigSettings private[sslconfig] (
     trustManagerConfig = trustManagerConfig)
 
   override def toString =
-    s"""SSLConfig(${checkRevocation},${debug},${default},${keyManagerConfig},${loose},${protocol},${revocationLists},${secureRandom},${trustManagerConfig})"""
+    s"""SSLConfig(${checkRevocation},${debug},${default},${enabledCipherSuites},${enabledProtocols},${keyManagerConfig},${loose},${protocol},${revocationLists},${secureRandom},${trustManagerConfig})"""
 }
 object SSLConfigSettings {
   def apply() = new SSLConfigSettings()
@@ -363,6 +373,9 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
     val debug = parseDebug(c.get[EnrichedConfig]("debug"))
     val looseOptions = parseLooseOptions(c.get[EnrichedConfig]("loose"))
 
+    val ciphers = Some(c.getSeq[String]("enabledCipherSuites")).filter(_.nonEmpty)
+    val protocols = Some(c.getSeq[String]("enabledProtocols")).filter(_.nonEmpty)
+
     val keyManagers = parseKeyManager(c.get[EnrichedConfig]("keyManager"))
 
     val trustManagers = parseTrustManager(c.get[EnrichedConfig]("trustManager"))
@@ -372,6 +385,8 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
       protocol = protocol,
       checkRevocation = checkRevocation,
       revocationLists = revocationLists,
+      enabledCipherSuites = ciphers,
+      enabledProtocols = protocols,
       keyManagerConfig = keyManagers,
       trustManagerConfig = trustManagers,
       secureRandom = None,
