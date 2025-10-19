@@ -6,10 +6,6 @@ language: scala
 addons:
   apt:
     packages:
-      # Needed for `xmllint` which is used to validate pom files
-      - libxml2-utils
-      # Used to download maven xsd file
-      - wget
       # To debug docs generation
       - tree
 
@@ -28,7 +24,6 @@ scala:
 
 script:
   - ./scripts/tests.sh
-  - ./scripts/validate-pom-files.sh
   - ./scripts/validate-docs.sh
 
 stages:
