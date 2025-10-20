@@ -1,7 +1,6 @@
 addSbtPlugin("com.github.sbt"        % "sbt-osgi"            % "0.10.0")
-addSbtPlugin("com.typesafe.sbt"      % "sbt-site"            % "1.4.1")
 addSbtPlugin("com.github.sbt"        % "sbt-header"          % "5.11.0")
 addSbtPlugin("com.typesafe"          % "sbt-mima-plugin"     % "1.1.4")
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"         % "0.9.2")
+addSbtPlugin("com.github.sbt"        % "sbt-site-paradox"    % "1.7.0")
 addSbtPlugin("com.github.sbt"        % "sbt-ci-release"      % "1.11.2")
 addSbtPlugin("com.github.sbt"        % "sbt-github-actions"  % "0.28.0")
