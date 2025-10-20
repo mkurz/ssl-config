@@ -19,19 +19,8 @@ lazy val sslConfigCore = project.in(file("ssl-config-core"))
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
     name := "ssl-config-core",
     mimaReportSignatureProblems := true,
-    mimaPreviousArtifacts := (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, _)) =>
-        Set("0.5.0")
-      case _ =>
-        Set()
-    }).map("com.typesafe" %% "ssl-config-core" % _),
+    mimaPreviousArtifacts := Set("com.typesafe" %% "ssl-config-core" % "0.6.1"),
     mimaBinaryIssueFilters ++= Seq(
-      // private[sslconfig]
-      ProblemFilters.exclude[DirectMissingMethodProblem]("com.typesafe.sslconfig.ssl.SSLLooseConfig.this"),
-      // private[sslconfig]
-      ProblemFilters.exclude[DirectMissingMethodProblem]("com.typesafe.sslconfig.ssl.SSLConfigSettings.this"),
-      // synthetic on private[sslconfig]
-      ProblemFilters.exclude[IncompatibleResultTypeProblem]("com.typesafe.sslconfig.ssl.SSLConfigSettings.<init>$default*")
     ),
     libraryDependencies ++= Dependencies.sslConfigCore,
     libraryDependencies ++= Dependencies.testDependencies,
