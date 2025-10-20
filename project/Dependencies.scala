@@ -20,9 +20,10 @@ object Library {
   val specs2 = Seq(
   "org.specs2" %% "specs2-core"          % Version.specs2 % Test,
   "org.specs2" %% "specs2-junit"         % Version.specs2 % Test,
-  "org.specs2" %% "specs2-mock"          % Version.specs2 % Test,
   "org.specs2" %% "specs2-matcher-extra" % Version.specs2 % Test,
   )
+
+  val mockito           = "org.mockito"    % "mockito-core" % "5.20.0"  % Test // ONLY FOR TESTS!
 
   val jodaTime          = "joda-time"              % "joda-time"                % Version.jodaTime  % Test // ONLY FOR TESTS!
   val jodaTimeConvert   = "org.joda"               % "joda-convert"             % Version.jodaTimeConvert  % Test // ONLY FOR TESTS!
@@ -33,5 +34,5 @@ object Dependencies {
   import Library._
 
   val sslConfigCore = Seq(typesafeConfig)
-  val testDependencies = Library.specs2 ++ Seq(jodaTime, jodaTimeConvert)
+  val testDependencies = Library.specs2 ++ Seq(mockito, jodaTime, jodaTimeConvert)
 }

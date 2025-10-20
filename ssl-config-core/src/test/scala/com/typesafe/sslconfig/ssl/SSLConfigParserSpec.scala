@@ -9,6 +9,8 @@ import org.specs2.mutable._
 
 import com.typesafe.config.ConfigFactory
 
+import java.net.URL
+
 object SSLConfigParserSpec extends Specification {
 
   // We can get horrible concurrent modification exceptions in the logger if we run
@@ -37,12 +39,12 @@ object SSLConfigParserSpec extends Specification {
       actual.default must beTrue
       actual.protocol must_== "TLSv1.1"
       actual.checkRevocation must beSome(true)
-      actual.revocationLists must beSome.which {
+      actual.revocationLists must beSome[Seq[URL]].which {
         _ must beEqualTo(Seq(new java.net.URL("http://example.com")))
       }
       //      actual.hostnameVerifierClass must_== classOf[com.ning.http.util.DefaultHostnameVerifier]
-      actual.enabledCipherSuites must beSome.which(_ must containTheSameElementsAs(Seq("TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA")))
-      actual.enabledProtocols must beSome.which(_ must containTheSameElementsAs(Seq("TLSv1.2", "TLSv1.1", "SSLv3")))
+      actual.enabledCipherSuites must beSome[Seq[String]].which(_ must containTheSameElementsAs(Seq("TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA")))
+      actual.enabledProtocols must beSome[Seq[String]].which(_ must containTheSameElementsAs(Seq("TLSv1.2", "TLSv1.1", "SSLv3")))
       actual.secureRandom must beNone
     }
 
@@ -121,9 +123,9 @@ object SSLConfigParserSpec extends Specification {
       val tmc = info.trustManagerConfig
       tmc.algorithm must_== "trustme"
       val tsi = tmc.trustStoreConfigs(0)
-      tsi.filePath must beSome.which(_ must beEqualTo("trusted"))
+      tsi.filePath must beSome[String].which(_ must beEqualTo("trusted"))
       tsi.storeType must_== "storeType"
-      tsi.password must beSome.which(_ must beEqualTo("changeit"))
+      tsi.password must beSome[String].which(_ must beEqualTo("changeit"))
     }
 
     "parse ssl-config.keyManager section" in {
@@ -146,13 +148,13 @@ object SSLConfigParserSpec extends Specification {
       kmc.algorithm must_== "keyStore"
       kmc.keyStoreConfigs.size must_== 2
       val fileStoreConfig = kmc.keyStoreConfigs(0)
-      fileStoreConfig.filePath must beSome.which(_ must beEqualTo("cacerts"))
+      fileStoreConfig.filePath must beSome[String].which(_ must beEqualTo("cacerts"))
       fileStoreConfig.storeType must_== "storeType"
-      fileStoreConfig.password must beSome.which {
+      fileStoreConfig.password must beSome[String].which {
         _ must beEqualTo("password1")
       }
       val stringStoreConfig = kmc.keyStoreConfigs(1)
-      stringStoreConfig.data must beSome.which(_ must beEqualTo("data"))
+      stringStoreConfig.data must beSome[String].which(_ must beEqualTo("data"))
     }
 
     "fail on ssl-config.keyManager with no path defined" in {
