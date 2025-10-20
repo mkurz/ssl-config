@@ -3,6 +3,7 @@ import com.typesafe.sbt.osgi.SbtOsgi.autoImport._
 import com.typesafe.tools.mima.core._
 
 ThisBuild / scalaVersion := Version.scala212
+ThisBuild / crossScalaVersions := Seq(Version.scala213, Version.scala212, Version.scala3)
 
 val disablePublishingSettings = Seq(
   // https://github.com/sbt/sbt/pull/3380
@@ -15,7 +16,6 @@ lazy val sslConfigCore = project.in(file("ssl-config-core"))
   .settings(AutomaticModuleName.settings("ssl.config.core"))
   .settings(osgiSettings: _*)
   .settings(
-    crossScalaVersions := Seq(Version.scala213, Version.scala212, Version.scala211, Version.scala3),
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
     name := "ssl-config-core",
     mimaReportSignatureProblems := true,
@@ -101,9 +101,9 @@ ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "macos-latest", "windows-
 ThisBuild / githubWorkflowJavaVersions := Seq(
   JavaSpec.temurin("8"),
   JavaSpec.temurin("11"),
-  JavaSpec.temurin("17"),
-  JavaSpec.temurin("21"),
-  JavaSpec.temurin("25"),
+  //JavaSpec.temurin("17"), // can't test currently because until we drop usage of sun.security.x509.*
+  //JavaSpec.temurin("21"),
+  //JavaSpec.temurin("25"),
 )
 
 ThisBuild / githubWorkflowBuildMatrixExclusions += MatrixExclude(Map("java" -> "temurin@8", "os" -> "macos-latest"))

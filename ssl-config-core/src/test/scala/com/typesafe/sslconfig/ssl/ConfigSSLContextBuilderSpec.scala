@@ -10,10 +10,10 @@ import java.security.cert.{ CertPathValidatorException, X509Certificate }
 
 import javax.net.ssl._
 import com.typesafe.sslconfig.util.NoopLogger
-import org.specs2.mock._
 import org.specs2.mutable._
+import org.mockito.Mockito._
 
-class ConfigSSLContextBuilderSpec extends Specification with Mockito {
+class ConfigSSLContextBuilderSpec extends Specification {
 
   val CACERTS = s"${System.getProperty("java.home")}/lib/security/cacerts"
 
@@ -157,8 +157,8 @@ class ConfigSSLContextBuilderSpec extends Specification with Mockito {
 
     "build a file based keystore builder" in {
       val info = SSLConfigSettings()
-      val keyManagerFactory = mock[KeyManagerFactoryWrapper]
-      val trustManagerFactory = mock[TrustManagerFactoryWrapper]
+      val keyManagerFactory = mock(classOf[KeyManagerFactoryWrapper])
+      val trustManagerFactory = mock(classOf[TrustManagerFactoryWrapper])
       val builder = new ConfigSSLContextBuilder(mkLogger, info, keyManagerFactory, trustManagerFactory)
 
       val storeType = KeyStore.getDefaultType
@@ -170,8 +170,8 @@ class ConfigSSLContextBuilderSpec extends Specification with Mockito {
 
     "build a file on classpath based keystore builder" in {
       val info = SSLConfigSettings()
-      val keyManagerFactory = mock[KeyManagerFactoryWrapper]
-      val trustManagerFactory = mock[TrustManagerFactoryWrapper]
+      val keyManagerFactory = mock(classOf[KeyManagerFactoryWrapper])
+      val trustManagerFactory = mock(classOf[TrustManagerFactoryWrapper])
       val builder = new ConfigSSLContextBuilder(mkLogger, info, keyManagerFactory, trustManagerFactory)
 
       val storeType = KeyStore.getDefaultType
@@ -184,8 +184,8 @@ class ConfigSSLContextBuilderSpec extends Specification with Mockito {
 
     "build a string based keystore builder" in {
       val info = SSLConfigSettings()
-      val keyManagerFactory = mock[KeyManagerFactoryWrapper]
-      val trustManagerFactory = mock[TrustManagerFactoryWrapper]
+      val keyManagerFactory = mock(classOf[KeyManagerFactoryWrapper])
+      val trustManagerFactory = mock(classOf[TrustManagerFactoryWrapper])
       val builder = new ConfigSSLContextBuilder(mkLogger, info, keyManagerFactory, trustManagerFactory)
 
       val data = "derp"
@@ -209,8 +209,8 @@ class ConfigSSLContextBuilderSpec extends Specification with Mockito {
       keyStore.load(null, password.toCharArray)
       keyStore.setKeyEntry("playgenerated", keyPair.getPrivate, password.toCharArray, Array(cert))
 
-      val keyManagerFactory = mock[KeyManagerFactoryWrapper]
-      val trustManagerFactory = mock[TrustManagerFactoryWrapper]
+      val keyManagerFactory = mock(classOf[KeyManagerFactoryWrapper])
+      val trustManagerFactory = mock(classOf[TrustManagerFactoryWrapper])
 
       val ksc = KeyStoreConfig(None, Some("path")).withPassword(Some(password))
       val keyManagerConfig = KeyManagerConfig().withKeyStoreConfigs(List(ksc))
@@ -239,8 +239,8 @@ class ConfigSSLContextBuilderSpec extends Specification with Mockito {
       // Don't add the private key here, instead add a public cert only.
       keyStore.setCertificateEntry("playgeneratedtrusted", cert)
 
-      val keyManagerFactory = mock[KeyManagerFactoryWrapper]
-      val trustManagerFactory = mock[TrustManagerFactoryWrapper]
+      val keyManagerFactory = mock(classOf[KeyManagerFactoryWrapper])
+      val trustManagerFactory = mock(classOf[TrustManagerFactoryWrapper])
 
       val ksc = KeyStoreConfig(None, Some("path")).withPassword(Some(password))
       val keyManagerConfig = KeyManagerConfig().withKeyStoreConfigs(List(ksc))
