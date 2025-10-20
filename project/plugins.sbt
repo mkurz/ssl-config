@@ -1,5 +1,4 @@
 addSbtPlugin("com.github.sbt"        % "sbt-osgi"            % "0.10.0")
-addSbtPlugin("org.scalariform"       % "sbt-scalariform"     % "1.8.3")
 addSbtPlugin("com.typesafe.sbt"      % "sbt-site"            % "1.4.1")
 addSbtPlugin("com.github.sbt"        % "sbt-header"          % "5.11.0")
 addSbtPlugin("com.typesafe"          % "sbt-mima-plugin"     % "1.1.4")

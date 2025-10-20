@@ -58,22 +58,7 @@ lazy val root = project.in(file("."))
 def configImport(packageName: String = "com.typesafe.config.*") = versionedImport(packageName, "1.4.2", "1.5.0")
 def versionedImport(packageName: String, lower: String, upper: String) = s"""$packageName;version="[$lower,$upper)""""
 
-lazy val checkCodeFormat = taskKey[Unit]("Check that code format is following Scalariform rules")
-
-checkCodeFormat := {
-  import scala.sys.process._
-  val exitCode = ("git diff --exit-code" !)
-  if (exitCode != 0) {
-    sys.error(
-      """
-        |ERROR: Scalariform check failed, see differences above.
-        |To fix, format your sources using sbt scalariformFormat test:scalariformFormat before submitting a pull request.
-        |Additionally, please squash your commits (eg, use git commit --amend) if you're going to update this pull request.
-      """.stripMargin)
-  }
-}
-
-addCommandAlias("validateCode", ";scalariformFormat;test:scalariformFormat;headerCheck;test:headerCheck;checkCodeFormat")
+addCommandAlias("validateCode", ";headerCheck;test:headerCheck")
 
 ThisBuild / githubWorkflowBuild := Seq(
   WorkflowStep.Sbt(List("validateCode", "test", "doc", "mimaReportBinaryIssues")),
