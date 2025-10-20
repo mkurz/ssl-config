@@ -74,6 +74,9 @@ jobs:
       - shell: bash
         run: sbt '++ ${{ matrix.scala }}' validateCode test doc mimaReportBinaryIssues
 
+      - shell: bash
+        run: ./scripts/validate-docs.sh
+
       - name: Compress target directories
         shell: bash
         run: tar cf targets.tar target ssl-config-core/target documentation/target project/target

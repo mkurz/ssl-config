@@ -75,7 +75,10 @@ checkCodeFormat := {
 
 addCommandAlias("validateCode", ";scalariformFormat;test:scalariformFormat;headerCheck;test:headerCheck;checkCodeFormat")
 
-ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("validateCode", "test", "doc", "mimaReportBinaryIssues")))
+ThisBuild / githubWorkflowBuild := Seq(
+  WorkflowStep.Sbt(List("validateCode", "test", "doc", "mimaReportBinaryIssues")),
+  WorkflowStep.Run(List("./scripts/validate-docs.sh")),
+)
 
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches :=
