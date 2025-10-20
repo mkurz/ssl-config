@@ -6,9 +6,7 @@ ThisBuild / scalaVersion := Version.scala212
 ThisBuild / crossScalaVersions := Seq(Version.scala213, Version.scala212, Version.scala3)
 
 val disablePublishingSettings = Seq(
-  // https://github.com/sbt/sbt/pull/3380
   publish / skip := true,
-  publishArtifact := false,
   mimaReportBinaryIssues := false
  )
 
