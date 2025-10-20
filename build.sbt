@@ -101,9 +101,9 @@ ThisBuild / githubWorkflowOSes := Seq("ubuntu-latest", "macos-latest", "windows-
 ThisBuild / githubWorkflowJavaVersions := Seq(
   JavaSpec.temurin("8"),
   JavaSpec.temurin("11"),
-  JavaSpec.temurin("17"),
-  JavaSpec.temurin("21"),
-  JavaSpec.temurin("25"),
+  //JavaSpec.temurin("17"), // can't test currently because until we drop usage of sun.security.x509.*
+  //JavaSpec.temurin("21"),
+  //JavaSpec.temurin("25"),
 )
 
 ThisBuild / githubWorkflowBuildMatrixExclusions += MatrixExclude(Map("java" -> "temurin@8", "os" -> "macos-latest"))
