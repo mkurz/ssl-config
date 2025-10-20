@@ -1,17 +1,16 @@
 import sbt._
 
 object Version {
-  val typesafeConfig = "1.4.2"
+  val typesafeConfig = "1.4.5"
 
   val jodaTime       = "2.10.13"
   val jodaTimeConvert = "2.2.2"
 
-  val specs2          = "4.8.3"
+  val specs2          = "4.22.0"
 
-  val scala211       = "2.11.12"
-  val scala212       = "2.12.15"
-  val scala213       = "2.13.8"
-  val scala3         = "3.0.2"
+  val scala212       = "2.12.20"
+  val scala213       = "2.13.17"
+  val scala3         = "3.3.7"
 }
 
 object Library {
@@ -19,10 +18,10 @@ object Library {
 
   // TESTS
   val specs2 = Seq(
-  "org.specs2" %% "specs2-core"          % Version.specs2 % Test cross CrossVersion.for3Use2_13,
-  "org.specs2" %% "specs2-junit"         % Version.specs2 % Test cross CrossVersion.for3Use2_13,
-  "org.specs2" %% "specs2-mock"          % Version.specs2 % Test cross CrossVersion.for3Use2_13,
-  "org.specs2" %% "specs2-matcher-extra" % Version.specs2 % Test cross CrossVersion.for3Use2_13,
+  "org.specs2" %% "specs2-core"          % Version.specs2 % Test,
+  "org.specs2" %% "specs2-junit"         % Version.specs2 % Test,
+  "org.specs2" %% "specs2-mock"          % Version.specs2 % Test,
+  "org.specs2" %% "specs2-matcher-extra" % Version.specs2 % Test,
   )
 
   val jodaTime          = "joda-time"              % "joda-time"                % Version.jodaTime  % Test // ONLY FOR TESTS!
