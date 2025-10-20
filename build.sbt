@@ -3,6 +3,7 @@ import com.typesafe.sbt.osgi.SbtOsgi.autoImport._
 import com.typesafe.tools.mima.core._
 
 ThisBuild / scalaVersion := Version.scala212
+ThisBuild / crossScalaVersions := Seq(Version.scala213, Version.scala212, Version.scala3)
 
 val disablePublishingSettings = Seq(
   // https://github.com/sbt/sbt/pull/3380
@@ -15,7 +16,6 @@ lazy val sslConfigCore = project.in(file("ssl-config-core"))
   .settings(AutomaticModuleName.settings("ssl.config.core"))
   .settings(osgiSettings: _*)
   .settings(
-    crossScalaVersions := Seq(Version.scala213, Version.scala212, Version.scala3),
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
     name := "ssl-config-core",
     mimaReportSignatureProblems := true,
