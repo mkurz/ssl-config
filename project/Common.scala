@@ -3,14 +3,14 @@
  */
 
 import com.typesafe.sbt.SbtScalariform
-import de.heikoseeberger.sbtheader._
+import sbtheader._
 import sbt.Keys._
 import sbt._
 
 // Docs have it as HeaderFileType but that is actually a TYPE ALIAS >:-(
 // https://github.com/sbt/sbt-header/blob/master/src/main/scala/de/heikoseeberger/sbtheader/HeaderPlugin.scala#L58
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
-import de.heikoseeberger.sbtheader.{CommentStyle => HeaderCommentStyle, FileType => HeaderFileType, License => HeaderLicense}
+import sbtheader.{CommentStyle => HeaderCommentStyle, FileType => HeaderFileType, License => HeaderLicense}
 import scalariform.formatter.preferences._
 import com.typesafe.sbt.SbtScalariform.autoImport._
 
@@ -54,7 +54,6 @@ object Common extends AutoPlugin {
         .setPreference(AlignParameters, false),
 
       // Header settings
-
       HeaderPlugin.autoImport.headerMappings := Map(
         HeaderFileType.scala -> HeaderCommentStyle.cStyleBlockComment,
         HeaderFileType.java  -> HeaderCommentStyle.cStyleBlockComment,
@@ -68,7 +67,7 @@ object Common extends AutoPlugin {
       HeaderPlugin.autoImport.headerLicense := {
         // To be manually updated yearly, preventing unrelated PR's to suddenly fail
         // just because time passed
-        val currentYear = 2020
+        val currentYear = 2025
         Some(HeaderLicense.Custom(
           s"""Copyright (C) 2015 - $currentYear Lightbend Inc. <https://www.lightbend.com>"""
         ))
