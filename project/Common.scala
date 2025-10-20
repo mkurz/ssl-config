@@ -2,17 +2,13 @@
  * Copyright (C) 2015 - 2021 Lightbend Inc. <https://www.lightbend.com>
  */
 
-import com.typesafe.sbt.SbtScalariform
 import sbtheader._
 import sbt.Keys._
 import sbt._
 
 // Docs have it as HeaderFileType but that is actually a TYPE ALIAS >:-(
 // https://github.com/sbt/sbt-header/blob/master/src/main/scala/de/heikoseeberger/sbtheader/HeaderPlugin.scala#L58
-import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import sbtheader.{CommentStyle => HeaderCommentStyle, FileType => HeaderFileType, License => HeaderLicense}
-import scalariform.formatter.preferences._
-import com.typesafe.sbt.SbtScalariform.autoImport._
 
 /**
  * Common sbt settings — automatically added to all projects.
@@ -27,7 +23,6 @@ object Common extends AutoPlugin {
   override def projectSettings =
     AutomateHeaderPlugin.projectSettings ++
     Seq(
-      scalariformAutoformat := true,
       organization := "com.typesafe",
       homepage := Some(url("https://github.com/lightbend/ssl-config")),
       developers := List(
@@ -45,13 +40,6 @@ object Common extends AutoPlugin {
         }
       },
       javacOptions ++= Seq("-encoding", "UTF-8", "-source", "1.8", "-target", "1.8"),
-      // Scalariform settings
-      ScalariformKeys.preferences := ScalariformKeys.preferences.value
-        .setPreference(AlignSingleLineCaseStatements, true)
-        .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-        .setPreference(DoubleIndentConstructorArguments, true)
-        .setPreference(DanglingCloseParenthesis, Preserve)
-        .setPreference(AlignParameters, false),
 
       // Header settings
       HeaderPlugin.autoImport.headerMappings := Map(
