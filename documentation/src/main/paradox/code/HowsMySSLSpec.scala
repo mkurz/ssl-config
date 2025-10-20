@@ -81,7 +81,7 @@ class HowsMySSLSpec extends PlaySpecification with AfterAll {
         """.stripMargin
 
       val configString = """
-         |//ssl-config.debug=["certpath", "ssl", "trustmanager"]
+         |//ssl-config.debug=["ssl", "trustmanager"]
          |ssl-config.protocol="TLSv1"
          |ssl-config.enabledProtocols=["TLSv1"]
          |
