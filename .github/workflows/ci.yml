@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        scala: [2.12.15]
+        scala: [2.12.20]
         java:
           - temurin@8
           - temurin@11
@@ -120,7 +120,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.15]
+        scala: [2.12.20]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -184,12 +184,12 @@ jobs:
       - name: Setup sbt
         uses: sbt/setup-sbt@v1
 
-      - name: Download target directories (2.12.15)
+      - name: Download target directories (2.12.20)
         uses: actions/download-artifact@v5
         with:
-          name: target-${{ matrix.os }}-2.12.15-${{ matrix.java }}
+          name: target-${{ matrix.os }}-2.12.20-${{ matrix.java }}
 
-      - name: Inflate target directories (2.12.15)
+      - name: Inflate target directories (2.12.20)
         run: |
           tar xf targets.tar
           rm targets.tar
