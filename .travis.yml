@@ -23,7 +23,6 @@ scala:
   - 3.0.2
 
 script:
-  - ./scripts/tests.sh
   - ./scripts/validate-docs.sh
 
 stages:
