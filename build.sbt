@@ -1,5 +1,5 @@
-import com.typesafe.sbt.osgi.SbtOsgi
-import com.typesafe.sbt.osgi.SbtOsgi.autoImport._
+import com.github.sbt.osgi.SbtOsgi
+import com.github.sbt.osgi.SbtOsgi.autoImport._
 import com.typesafe.tools.mima.core._
 
 ThisBuild / scalaVersion := Version.scala212
