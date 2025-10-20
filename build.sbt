@@ -62,7 +62,7 @@ addCommandAlias("validateCode", ";headerCheck;test:headerCheck")
 
 ThisBuild / githubWorkflowBuild := Seq(
   WorkflowStep.Sbt(List("validateCode", "test", "doc", "mimaReportBinaryIssues")),
-  WorkflowStep.Run(List("./scripts/validate-docs.sh")),
+  WorkflowStep.Run(List("./scripts/validate-docs.sh"), cond=Some("matrix.java != 'temurin@8'")),
 )
 
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")

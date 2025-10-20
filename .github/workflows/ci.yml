@@ -74,7 +74,8 @@ jobs:
       - shell: bash
         run: sbt '++ ${{ matrix.scala }}' validateCode test doc mimaReportBinaryIssues
 
-      - shell: bash
+      - if: matrix.java != 'temurin@8'
+        shell: bash
         run: ./scripts/validate-docs.sh
 
       - name: Compress target directories
