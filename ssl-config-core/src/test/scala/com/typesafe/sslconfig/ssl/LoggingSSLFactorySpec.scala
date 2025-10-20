@@ -20,7 +20,7 @@ class LoggingSSLFactorySpec extends Specification {
           |ssl-config {
           |  debug {
           |    ssl = true # setting this will turn on debugging for SSLEngine / SSLSocketFactory
-          |    pluggability = true # print out a warning
+          |    #pluggability = true # print out a warning
           |  }
           |  trustManager = {
           |    stores = [
@@ -55,7 +55,7 @@ class LoggingSSLFactorySpec extends Specification {
       val socket = factory.createSocket()
 
       messagesList must contain("entry: createSocket()")
-      messagesList must contain("pluggability is a deprecated debug setting and has no effect!")
+      //messagesList must contain("pluggability is a deprecated debug setting and has no effect!")
     }
   }
 

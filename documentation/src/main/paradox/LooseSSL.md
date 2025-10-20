@@ -146,22 +146,3 @@ By disabling certificate validation, you are also disabling
 hostname verification!
 
 @@@
-
-### Disabling Hostname Verification
-
-If you want to disable hostname verification, you can set a loose flag:
-
-```conf
-ssl-config.loose.disableHostnameVerification=true
-```
-
-With hostname verification disabled, a DNS proxy such as `dnschef` can
-[easily intercept
-communication](https://tersesystems.com/2014/03/31/testing-hostname-verification/).
-
-@@@ note
-
-By disabling hostname verification, you are also disabling
-certificate verification!
-
-@@@
