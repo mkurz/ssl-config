@@ -39,7 +39,7 @@ class LoggingSSLFactorySpec extends Specification {
 
       val messagesList = mutable.Buffer[String]()
       val loggerFactory: LoggerFactory = new LoggerFactory {
-        override def apply(clazz: Class[_]) = new PrintlnLogger(messagesList)
+        override def apply(clazz: Class[?]) = new PrintlnLogger(messagesList)
         override def apply(name: String) = new PrintlnLogger(messagesList)
       }
       val parser = new SSLConfigParser(EnrichedConfig(config.getConfig("ssl-config")), getClass.getClassLoader, Some(loggerFactory))

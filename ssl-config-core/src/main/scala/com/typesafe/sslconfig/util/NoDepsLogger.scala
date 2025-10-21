@@ -25,7 +25,7 @@ object NoopLogger {
   private val _noop = new NoopLogger
 
   def factory(): LoggerFactory = new LoggerFactory {
-    override def apply(clazz: Class[_]) = _noop
+    override def apply(clazz: Class[?]) = _noop
     override def apply(name: String) = _noop
   }
 }
@@ -44,7 +44,7 @@ final class NoopLogger extends NoDepsLogger {
 }
 object PrintlnLogger {
   def factory(): LoggerFactory = new LoggerFactory {
-    override def apply(clazz: Class[_]) = new PrintlnLogger(clazz.getName)
+    override def apply(clazz: Class[?]) = new PrintlnLogger(clazz.getName)
     override def apply(name: String) = new PrintlnLogger(name)
   }
 }
