@@ -50,49 +50,57 @@ class CompositeX509KeyManager(mkLogger: LoggerFactory, keyManagers: Seq[X509KeyM
   def chooseClientAlias(keyType: Array[String], issuers: Array[Principal], socket: Socket): String = {
     logger.debug(s"chooseClientAlias: keyType = ${keyType.toSeq}, issuers = ${issuersToString(issuers)}, socket = $socket")
 
-    withKeyManagers { keyManager =>
-      val clientAlias = keyManager.chooseClientAlias(keyType, issuers, socket)
-      if (clientAlias != null) {
-        logger.debug(s"chooseClientAlias: using clientAlias $clientAlias with keyManager $keyManager")
-        return clientAlias
+    keyManagers.iterator.find { keyManager =>
+      try {
+        val clientAlias = keyManager.chooseClientAlias(keyType, issuers, socket)
+        if (clientAlias != null) {
+          logger.debug(s"chooseClientAlias: using clientAlias $clientAlias with keyManager $keyManager")
+          true
+        } else false
+      } catch {
+        case _: CertificateException => false
       }
-    }
-    null
+    }.flatMap(keyManager => Option(keyManager.chooseClientAlias(keyType, issuers, socket))).orNull
   }
 
   override def chooseEngineClientAlias(keyType: Array[String], issuers: Array[Principal], engine: SSLEngine): String = {
     logger.debug(s"chooseEngineClientAlias: keyType = ${keyType.toSeq}, issuers = ${issuersToString(issuers)}, engine = $engine")
-    withKeyManagers { (keyManager: X509KeyManager) =>
-      keyManager match {
-        case extendedKeyManager: X509ExtendedKeyManager =>
-          val clientAlias = extendedKeyManager.chooseEngineClientAlias(keyType, issuers, engine)
-          if (clientAlias != null) {
-            logger.debug(s"chooseEngineClientAlias: using clientAlias $clientAlias with keyManager $extendedKeyManager")
-            return clientAlias
-          }
-        case _ =>
-        // do nothing
+
+    keyManagers.iterator.find { (keyManager: X509KeyManager) =>
+      try {
+        keyManager match {
+          case extendedKeyManager: X509ExtendedKeyManager =>
+            val clientAlias = extendedKeyManager.chooseEngineClientAlias(keyType, issuers, engine)
+            if (clientAlias != null) {
+              logger.debug(s"chooseEngineClientAlias: using clientAlias $clientAlias with keyManager $extendedKeyManager")
+              true
+            } else false
+          case _ => false // do nothing
+        }
+      } catch {
+        case _: CertificateException => false
       }
-    }
-    null
+    }.flatMap(keyManager => Option(keyManager.asInstanceOf[X509ExtendedKeyManager].chooseEngineClientAlias(keyType, issuers, engine))).orNull
   }
 
   override def chooseEngineServerAlias(keyType: String, issuers: Array[Principal], engine: SSLEngine): String = {
     logger.debug(s"chooseEngineServerAlias: keyType = ${keyType.toSeq}, issuers = ${issuersToString(issuers)}, engine = $engine")
 
-    withKeyManagers { (keyManager: X509KeyManager) =>
-      keyManager match {
-        case extendedKeyManager: X509ExtendedKeyManager =>
-          val clientAlias = extendedKeyManager.chooseEngineServerAlias(keyType, issuers, engine)
-          if (clientAlias != null) {
-            logger.debug(s"chooseEngineServerAlias: using clientAlias $clientAlias with keyManager $extendedKeyManager")
-            return clientAlias
-          }
-        case _ =>
-        // do nothing
+    keyManagers.iterator.find { (keyManager: X509KeyManager) =>
+      try {
+        keyManager match {
+          case extendedKeyManager: X509ExtendedKeyManager =>
+            val clientAlias = extendedKeyManager.chooseEngineServerAlias(keyType, issuers, engine)
+            if (clientAlias != null) {
+              logger.debug(s"chooseEngineServerAlias: using clientAlias $clientAlias with keyManager $extendedKeyManager")
+              true
+            } else false
+          case _ => false // do nothing
+        }
+      } catch {
+        case _: CertificateException => false
       }
-    }
-    null
+    }.flatMap(keyManager => Option(keyManager.asInstanceOf[X509ExtendedKeyManager].chooseEngineServerAlias(keyType, issuers, engine))).orNull
   }
 
   def getServerAliases(keyType: String, issuers: Array[Principal]): Array[String] = {
@@ -112,38 +120,47 @@ class CompositeX509KeyManager(mkLogger: LoggerFactory, keyManagers: Seq[X509KeyM
 
   def chooseServerAlias(keyType: String, issuers: Array[Principal], socket: Socket): String = {
     logger.debug(s"chooseServerAlias: keyType = $keyType, issuers = ${issuersToString(issuers)}, socket = $socket")
-    withKeyManagers { keyManager =>
-      val serverAlias = keyManager.chooseServerAlias(keyType, issuers, socket)
-      if (serverAlias != null) {
-        logger.debug(s"chooseServerAlias: using serverAlias $serverAlias with keyManager $keyManager")
-        return serverAlias
+    keyManagers.iterator.find { keyManager =>
+      try {
+        val serverAlias = keyManager.chooseServerAlias(keyType, issuers, socket)
+        if (serverAlias != null) {
+          logger.debug(s"chooseServerAlias: using serverAlias $serverAlias with keyManager $keyManager")
+          true
+        } else false
+      } catch {
+        case _: CertificateException => false
       }
-    }
-    null
+    }.flatMap(keyManager => Option(keyManager.chooseServerAlias(keyType, issuers, socket))).orNull
   }
 
   def getCertificateChain(alias: String): Array[X509Certificate] = {
     logger.debug(s"getCertificateChain: alias = $alias")
-    withKeyManagers { keyManager =>
-      val chain = keyManager.getCertificateChain(alias)
-      if (chain != null && chain.length > 0) {
-        logger.debug(s"getCertificateChain: chain ${debugChain(chain)} with keyManager $keyManager")
-        return chain
+    keyManagers.iterator.find { keyManager =>
+      try {
+        val chain = keyManager.getCertificateChain(alias)
+        if (chain != null && chain.length > 0) {
+          logger.debug(s"getCertificateChain: chain ${debugChain(chain)} with keyManager $keyManager")
+          true
+        } else false
+      } catch {
+        case _: CertificateException => false
       }
-    }
-    null
+    }.flatMap(keyManager => Option(keyManager.getCertificateChain(alias))).orNull
   }
 
   def getPrivateKey(alias: String): PrivateKey = {
     logger.debug(s"getPrivateKey: alias = $alias")
-    withKeyManagers { keyManager =>
-      val privateKey = keyManager.getPrivateKey(alias)
-      if (privateKey != null) {
-        logger.debug(s"getPrivateKey: privateKey $privateKey with keyManager $keyManager")
-        return privateKey
+    keyManagers.iterator.find { keyManager =>
+      try {
+        val privateKey = keyManager.getPrivateKey(alias)
+        if (privateKey != null) {
+          logger.debug(s"getPrivateKey: privateKey $privateKey with keyManager $keyManager")
+          true
+        } else false
+      } catch {
+        case _: CertificateException => false
       }
-    }
-    null
+    }.flatMap(keyManager => Option(keyManager.getPrivateKey(alias))).orNull
   }
 
   private def withKeyManagers[T](block: (X509KeyManager => T)): Seq[CertificateException] = {
