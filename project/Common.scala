@@ -27,8 +27,15 @@ object Common extends AutoPlugin {
     AutomateHeaderPlugin.projectSettings ++
       Seq(
         organization := "com.typesafe",
-        homepage     := Some(url("https://github.com/lightbend/ssl-config")),
-        developers   := List(
+        homepage     := Some(url("https://lightbend.github.io/ssl-config/")),
+        scmInfo      := Some(
+          ScmInfo(
+            url(s"https://github.com/lightbend/ssl-config"),
+            s"scm:git:https://github.com/lightbend/ssl-config.git",
+            Some(s"scm:git:git@github.com:lightbend/ssl-config.git")
+          )
+        ),
+        developers := List(
           Developer("wsargent", "Will Sargent", "", url("https://tersesystems.com")),
           Developer("ktoso", "Konrad Malawski", "", url("https://project13.pl")),
         ),
