@@ -156,7 +156,7 @@ lazy val root = project
 def configImport(packageName: String = "com.typesafe.config.*")        = versionedImport(packageName, "1.4.2", "1.5.0")
 def versionedImport(packageName: String, lower: String, upper: String) = s"""$packageName;version="[$lower,$upper)""""
 
-addCommandAlias("validateCode", "headerCheckAll")
+addCommandAlias("validateCode", "headerCheckAll ; scalafmtSbtCheck ; scalafmtCheckAll")
 
 ThisBuild / githubWorkflowBuild := Seq(
   WorkflowStep.Sbt(List("validateCode", "test", "doc", "mimaReportBinaryIssues")),
