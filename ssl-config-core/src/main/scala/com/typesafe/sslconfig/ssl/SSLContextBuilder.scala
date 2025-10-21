@@ -287,7 +287,7 @@ class ConfigSSLContextBuilder(
     // For the sake of completeness, set the static revocation list if it exists...
     revocationLists.map {
       crlList =>
-        import scala.collection.JavaConverters._
+        import scala.jdk.CollectionConverters._
         pkixParameters.addCertStore(CertStore.getInstance("Collection", new CollectionCertStoreParameters(crlList.asJavaCollection)))
     }
     new CertPathTrustManagerParameters(pkixParameters)
@@ -326,7 +326,7 @@ class ConfigSSLContextBuilder(
    * Validates that a key store (as opposed to a trust store) contains private keys for client authentication.
    */
   def validateStoreContainsPrivateKeys(ksc: KeyStoreConfig, keyStore: KeyStore): Boolean = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
 
     // Is there actually a private key being stored in this key store?
     val password = ksc.password.map(_.toCharArray).orNull

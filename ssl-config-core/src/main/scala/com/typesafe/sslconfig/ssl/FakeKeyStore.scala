@@ -140,7 +140,7 @@ final class FakeKeyStore(mkLogger: LoggerFactory) {
   def getKeyStoreFilePath(appPath: File) = new File(appPath, KeystoreSettings.GeneratedKeyStore)
 
   private[ssl] def shouldGenerate(keyStoreFile: File): Boolean = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
 
     if (!keyStoreFile.exists()) {
       return true

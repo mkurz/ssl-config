@@ -96,7 +96,7 @@ class FileBasedKeyStoreBuilder(
   }
 
   def readCertificates(file: File): Iterable[Certificate] = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     val cf = CertificateFactory.getInstance("X.509")
     val fis = java.nio.file.Files.newInputStream(file.toPath)
     val bis = new BufferedInputStream(fis)
@@ -139,7 +139,7 @@ class FileOnClasspathBasedKeyStoreBuilder(
   }
 
   def readCertificates(is: InputStream): Iterable[Certificate] = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     val cf = CertificateFactory.getInstance("X.509")
     val bis = new BufferedInputStream(is)
 

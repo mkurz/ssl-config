@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 import com.typesafe.config._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.immutable
 import scala.concurrent.duration.FiniteDuration
 
@@ -173,7 +173,7 @@ object ConfigLoader {
     def load(config: Config, path: String): A = f(config)(path)
   }
 
-  import scala.collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   private def toScala[A](as: java.util.List[A]): immutable.Seq[A] = as.asScala.toVector
 
