@@ -17,7 +17,7 @@ package object ssl {
   }
 
   implicit def arrayCertsToListCerts(chain: Array[Certificate]): java.util.List[Certificate] = {
-    import scala.jdk.CollectionConverters._
+    import com.typesafe.sslconfig.Compat.CollectionConverters._
     chain.toList.asJava
   }
 

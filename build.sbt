@@ -102,12 +102,6 @@ lazy val sslConfigCore = project.in(file("ssl-config-core"))
     ),
     libraryDependencies ++= Dependencies.sslConfigCore,
     libraryDependencies ++= Dependencies.testDependencies,
-    libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, 12)) =>
-        Seq("org.scala-lang.modules" %% "scala-collection-compat" % "2.14.0")
-      case _ =>
-        Seq.empty
-    }),
     OsgiKeys.bundleSymbolicName := s"${organization.value}.sslconfig",
     OsgiKeys.exportPackage := Seq(s"com.typesafe.sslconfig.*;version=${version.value}"),
     OsgiKeys.importPackage := Seq("!sun.misc", "!sun.security.*", configImport(), "*"),

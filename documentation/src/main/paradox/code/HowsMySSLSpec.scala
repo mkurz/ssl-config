@@ -41,7 +41,7 @@ class HowsMySSLSpec extends PlaySpecification with AfterAll {
   }
 
   def configToMap(configString: String): Map[String, _] = {
-    import scala.jdk.CollectionConverters._
+    import com.typesafe.sslconfig.Compat.CollectionConverters._
     ConfigFactory.parseString(configString).root().unwrapped().asScala.toMap
   }
 

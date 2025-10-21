@@ -15,4 +15,6 @@ private[sslconfig] object Compat {
   implicit final class MapOps[K, V](private val m: Map[K, V]) extends AnyVal {
     def mapValuesView[R](f: V => R) = m.mapValues(f)
   }
+
+  val CollectionConverters = scala.collection.JavaConverters
 }
