@@ -35,11 +35,19 @@ import sun.security.x509._
  *
  * Was: play.core.server.ssl.FakeKeyStore
  */
+@deprecated(
+  "Uses internal sun.security.x509 classes. " +
+  "Works in Java 17 only with the `--add-exports=java.base/sun.security.x509=ALL-UNNAMED` flag. " +
+  "Does not work at all anymore with Java 21 and newer. " +
+  "To create certificates from code, use alternatives like Bouncy Castle instead.", "0.7.0"
+)
 object FakeChainedKeyStore {
   private val EMPTY_PASSWORD = Array.emptyCharArray
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   object CA {
 
+    @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
     object Alias {
       // These two constants use a weird capitalization but that's what keystore uses internally (see class scaladoc)
       val trustedCertEntry = "sslconfig-CA-trust"
@@ -50,8 +58,10 @@ object FakeChainedKeyStore {
     val keyPassword: Array[Char] = EMPTY_PASSWORD
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   object User {
 
+    @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
     object Alias {
       // These two constants use a weird capitalization but that's what keystore uses internally (see class scaladoc)
       val trustedCertEntry = "sslconfig-user-trust"
@@ -62,6 +72,7 @@ object FakeChainedKeyStore {
     val keyPassword: Array[Char] = EMPTY_PASSWORD
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   object KeystoreSettings {
     val GeneratedKeyStore: String = fileInDevModeDir("chained.keystore")
     val SignatureAlgorithmName = "SHA256withRSA"
@@ -71,6 +82,7 @@ object FakeChainedKeyStore {
     val keystorePassword: Array[Char] = EMPTY_PASSWORD
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private def fileInDevModeDir(filename: String): String = {
     "target" + File.separatorChar + "dev-mode" + File.separatorChar + filename
   }
@@ -81,6 +93,7 @@ object FakeChainedKeyStore {
    *
    * This method is public only for consumption by Play/Lagom.
    */
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def generateKeyStore: KeyStore = {
     // Create a new KeyStore
     val keyStore: KeyStore = KeyStore.getInstance(KeystoreSettings.KeystoreType)
@@ -104,6 +117,7 @@ object FakeChainedKeyStore {
     keyStore
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private[ssl] def createUserCertificate(userKeyPair: KeyPair, certificateAuthorityKeyPair: KeyPair): X509Certificate = {
     val certInfo = new X509CertInfo()
 
@@ -141,6 +155,7 @@ object FakeChainedKeyStore {
     newCert
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private def createCertificateAuthority(keyPair: KeyPair): X509Certificate = {
     val certInfo = new X509CertInfo()
     // Serial number and version
@@ -187,6 +202,12 @@ object FakeChainedKeyStore {
  *
  * Was: play.core.server.ssl.FakeKeyStore
  */
+@deprecated(
+  "Uses internal sun.security.x509 classes. " +
+  "Works in Java 17 only with the `--add-exports=java.base/sun.security.x509=ALL-UNNAMED` flag. " +
+  "Does not work at all anymore with Java 21 and newer. " +
+  "To create certificates from code, use alternatives like Bouncy Castle instead.", "0.7.0"
+)
 final class FakeChainedKeyStore(mkLogger: LoggerFactory) {
 
   import FakeChainedKeyStore._
@@ -196,8 +217,10 @@ final class FakeChainedKeyStore(mkLogger: LoggerFactory) {
   /**
    * @param appPath a file descriptor to the root folder of the project (the root, not a particular module).
    */
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def getKeyStoreFilePath(appPath: File) = new File(appPath, KeystoreSettings.GeneratedKeyStore)
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private[ssl] def shouldGenerate(keyStoreFile: File): Boolean = {
     import com.typesafe.sslconfig.Compat.CollectionConverters._
 
@@ -212,6 +235,7 @@ final class FakeChainedKeyStore(mkLogger: LoggerFactory) {
     }
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private def loadKeyStore(file: File): KeyStore = {
     val keyStore: KeyStore = KeyStore.getInstance(KeystoreSettings.KeystoreType)
     val in = java.nio.file.Files.newInputStream(file.toPath)
@@ -223,12 +247,14 @@ final class FakeChainedKeyStore(mkLogger: LoggerFactory) {
     keyStore
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private[ssl] def certificateTooWeak(c: java.security.cert.Certificate): Boolean = {
     val key: RSAPublicKey = c.getPublicKey.asInstanceOf[RSAPublicKey]
     key.getModulus.bitLength < 2048 || c.asInstanceOf[X509CertImpl].getSigAlgName != KeystoreSettings.SignatureAlgorithmName
   }
 
   /** Public only for consumption by Play/Lagom. */
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def createKeyStore(appPath: File): KeyStore = {
     val keyStoreFile = getKeyStoreFilePath(appPath)
     val keyStoreDir = keyStoreFile.getParentFile
@@ -255,6 +281,7 @@ final class FakeChainedKeyStore(mkLogger: LoggerFactory) {
     keyStore
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private def createKeystoreParentDirectory(keyStoreDir: File) = {
     if (keyStoreDir.mkdirs()) {
       logger.debug(s"Parent directory for keystore successfully created at ${keyStoreDir.getAbsolutePath}")
@@ -273,6 +300,7 @@ final class FakeChainedKeyStore(mkLogger: LoggerFactory) {
   }
 
   /** Public only for consumption by Play/Lagom. */
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def keyManagerFactory(appPath: File): KeyManagerFactory = {
     val keyStore = createKeyStore(appPath)
 
@@ -287,6 +315,7 @@ final class FakeChainedKeyStore(mkLogger: LoggerFactory) {
    *
    * Logs any IOExceptions encountered.
    */
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def closeQuietly(closeable: Closeable) = {
     try {
       if (closeable != null) {
