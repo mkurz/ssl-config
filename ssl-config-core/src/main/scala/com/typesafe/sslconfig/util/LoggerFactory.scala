@@ -5,6 +5,6 @@
 package com.typesafe.sslconfig.util
 
 trait LoggerFactory {
-  def apply(clazz: Class[_]): NoDepsLogger
+  def apply(clazz: Class[?]): NoDepsLogger
   def apply(name: String): NoDepsLogger
 }

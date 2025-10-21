@@ -117,7 +117,7 @@ class ConfigSSLContextBuilder(
     } else Nil
 
     val context = buildSSLContext(info.protocol, keyManagers, trustManagers, info.secureRandom)
-    if (info.debug.enabled) new TracingSSLContext(context, info.debug)(mkLogger)
+    if (info.debug.enabled) new TracingSSLContext(context, info.debug)(using mkLogger)
     else context
   }
 
@@ -235,7 +235,7 @@ class ConfigSSLContextBuilder(
 
     // The JSSE implementation only sends back ONE key manager, X509ExtendedKeyManager
     val keyManager = keyManagers.head.asInstanceOf[X509ExtendedKeyManager]
-    new TracingX509ExtendedKeyManager(keyManager, debug)(mkLogger)
+    new TracingX509ExtendedKeyManager(keyManager, debug)(using mkLogger)
   }
 
   // Should anyone have any interest in implementing this feature at all, they can implement this method and
@@ -319,7 +319,7 @@ class ConfigSSLContextBuilder(
 
     // The JSSE implementation only sends back ONE trust manager, X509TrustManager
     val manager = trustManagers.head.asInstanceOf[X509ExtendedTrustManager]
-    new TracingX509ExtendedTrustManager(manager, debug)(mkLogger)
+    new TracingX509ExtendedTrustManager(manager, debug)(using mkLogger)
   }
 
   /**
