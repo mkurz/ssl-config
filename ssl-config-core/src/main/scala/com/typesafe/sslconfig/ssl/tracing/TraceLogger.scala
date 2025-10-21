@@ -10,6 +10,7 @@ import java.security.cert.X509Certificate
 import com.typesafe.sslconfig.ssl
 import com.typesafe.sslconfig.util.{ LoggerFactory, NoDepsLogger }
 
+import com.typesafe.sslconfig.Compat._
 import scala.util.control.NonFatal
 
 private[sslconfig] trait TraceLogger {
@@ -18,7 +19,7 @@ private[sslconfig] trait TraceLogger {
 
   def tracer[T, E <: AnyRef](methodName: String, parameters: Map[String, Any], function: () => T)(implicit loggerFactory: LoggerFactory): T = {
     val logger = loggerFactory(getClass)
-    val methodParams = parameters.mapValues(mapValue).mkString(",")
+    val methodParams = parameters.mapValuesView(mapValue).mkString(",")
     val enabled = isLogEnabled(methodName, parameters)
     if (enabled) {
       entry(logger, methodName, methodParams)
