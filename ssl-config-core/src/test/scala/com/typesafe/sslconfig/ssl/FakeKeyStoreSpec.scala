@@ -37,7 +37,7 @@ class FakeKeyStoreSpec extends Specification {
       val fakeKeyStore2 = new FakeKeyStore(mkLogger)
       val keyStore = fakeKeyStore2.createKeyStore(basePath)
       try {
-        import scala.jdk.CollectionConverters._
+        import com.typesafe.sslconfig.Compat.CollectionConverters._
         val certificates = keyStore.aliases().asScala.flatMap {
           alias =>
             Try(keyStore.getCertificate(alias)).toOption
@@ -62,7 +62,7 @@ class FakeKeyStoreSpec extends Specification {
         Some(FakeKeyStore.KeystoreSettings.keystorePassword)
       ).build()
       try {
-        import scala.jdk.CollectionConverters._
+        import com.typesafe.sslconfig.Compat.CollectionConverters._
         val certificates = keyStore.aliases().asScala.flatMap {
           alias =>
             Try(keyStore.getCertificate(alias)).toOption
