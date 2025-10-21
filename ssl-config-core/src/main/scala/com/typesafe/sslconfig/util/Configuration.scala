@@ -45,7 +45,7 @@ class EnrichedConfig(val underlying: Config) {
   /**
    * Get a prototyped sequence of objects.
    *
-   * Each object in the sequence will fallback to the object loaded from prototype.$path.
+   * Each object in the sequence will fallback to the object loaded from prototype.\$path.
    */
   def getPrototypedSeq(path: String, prototypePath: String = "prototype.$path"): immutable.Seq[EnrichedConfig] = {
     val prototype = underlying.getConfig(prototypePath.replace("$path", path))
@@ -57,7 +57,7 @@ class EnrichedConfig(val underlying: Config) {
   /**
    * Get a prototyped map of objects.
    *
-   * Each value in the map will fallback to the object loaded from prototype.$path.
+   * Each value in the map will fallback to the object loaded from prototype.\$path.
    */
   def getPrototypedMap(path: String, prototypePath: String = "prototype.$path"): Map[String, EnrichedConfig] = {
     val prototype = if (prototypePath.isEmpty) {
