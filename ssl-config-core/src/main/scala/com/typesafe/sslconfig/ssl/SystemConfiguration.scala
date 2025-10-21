@@ -6,7 +6,8 @@ package com.typesafe.sslconfig.ssl
 
 import java.security.Security
 
-import com.typesafe.sslconfig.util.{ LoggerFactory, NoDepsLogger }
+import com.typesafe.sslconfig.util.LoggerFactory
+import com.typesafe.sslconfig.util.NoDepsLogger
 
 /**
  * Configures global system properties on the JSSE implementation, if defined.
@@ -28,12 +29,16 @@ class SystemConfiguration(mkLogger: LoggerFactory) {
 
   def configureUnsafeRenegotiation(allowUnsafeRenegotiation: Boolean): Unit = {
     System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", allowUnsafeRenegotiation.toString)
-    logger.debug(s"configureUnsafeRenegotiation: sun.security.ssl.allowUnsafeRenegotiation = ${allowUnsafeRenegotiation.toString}")
+    logger.debug(
+      s"configureUnsafeRenegotiation: sun.security.ssl.allowUnsafeRenegotiation = ${allowUnsafeRenegotiation.toString}"
+    )
   }
 
   def configureAllowLegacyHelloMessages(allowLegacyHelloMessages: Boolean): Unit = {
     System.setProperty("sun.security.ssl.allowLegacyHelloMessages", allowLegacyHelloMessages.toString)
-    logger.debug(s"configureAllowLegacyHelloMessages: sun.security.ssl.allowLegacyHelloMessages = ${allowLegacyHelloMessages.toString}")
+    logger.debug(
+      s"configureAllowLegacyHelloMessages: sun.security.ssl.allowLegacyHelloMessages = ${allowLegacyHelloMessages.toString}"
+    )
   }
 
   def configureCheckRevocation(checkRevocation: Boolean): Unit = {
@@ -60,4 +65,3 @@ class SystemConfiguration(mkLogger: LoggerFactory) {
     System.clearProperty("sun.security.ssl.allowUnsafeRenegotiation")
   }
 }
-

@@ -6,37 +6,70 @@ package com.typesafe.sslconfig.ssl.tracing
 
 import java.net.Socket
 import java.security.cert.X509Certificate
-import java.security.{ Principal, PrivateKey }
+import java.security.Principal
+import java.security.PrivateKey
+import javax.net.ssl.KeyManager
+import javax.net.ssl.SSLEngine
+import javax.net.ssl.X509ExtendedKeyManager
 
 import com.typesafe.sslconfig.ssl.SSLDebugConfig
 import com.typesafe.sslconfig.util.LoggerFactory
-import javax.net.ssl.{ KeyManager, SSLEngine, X509ExtendedKeyManager }
 
-private[sslconfig] class TracingX509ExtendedKeyManager(supplier: => X509ExtendedKeyManager, debug: SSLDebugConfig)(implicit loggerFactory: LoggerFactory) extends X509ExtendedKeyManager with TraceLogger {
+private[sslconfig] class TracingX509ExtendedKeyManager(supplier: => X509ExtendedKeyManager, debug: SSLDebugConfig)(
+    implicit loggerFactory: LoggerFactory
+) extends X509ExtendedKeyManager
+    with TraceLogger {
 
-  override def chooseEngineClientAlias(keyTypes: Array[String], issuers: Array[Principal], engine: SSLEngine): String = {
-    tracer("chooseEngineClientAlias", Map("keyTypes" -> keyTypes, "issuers" -> issuers, "engine" -> engine),
-      () => supplier.chooseEngineClientAlias(keyTypes, issuers, engine))
+  override def chooseEngineClientAlias(
+      keyTypes: Array[String],
+      issuers: Array[Principal],
+      engine: SSLEngine
+  ): String = {
+    tracer(
+      "chooseEngineClientAlias",
+      Map("keyTypes" -> keyTypes, "issuers" -> issuers, "engine" -> engine),
+      () => supplier.chooseEngineClientAlias(keyTypes, issuers, engine)
+    )
   }
 
   override def chooseEngineServerAlias(keyTypes: String, issuers: Array[Principal], engine: SSLEngine): String = {
-    tracer("chooseEngineServerAlias", Map("keyTypes" -> keyTypes, "issuers" -> issuers, "engine" -> engine), () => supplier.chooseEngineServerAlias(keyTypes, issuers, engine))
+    tracer(
+      "chooseEngineServerAlias",
+      Map("keyTypes" -> keyTypes, "issuers" -> issuers, "engine" -> engine),
+      () => supplier.chooseEngineServerAlias(keyTypes, issuers, engine)
+    )
   }
 
   override def getClientAliases(keyType: String, issuers: Array[Principal]): Array[String] = {
-    tracer("getClientAliases", Map("keyType" -> keyType, "issuers" -> issuers), () => supplier.getClientAliases(keyType, issuers))
+    tracer(
+      "getClientAliases",
+      Map("keyType" -> keyType, "issuers" -> issuers),
+      () => supplier.getClientAliases(keyType, issuers)
+    )
   }
 
   override def chooseClientAlias(keyTypes: Array[String], issuers: Array[Principal], socket: Socket): String = {
-    tracer("chooseClientAlias", Map("keyTypes" -> keyTypes, "issuers" -> issuers, "socket" -> socket), () => supplier.chooseClientAlias(keyTypes, issuers, socket))
+    tracer(
+      "chooseClientAlias",
+      Map("keyTypes" -> keyTypes, "issuers" -> issuers, "socket" -> socket),
+      () => supplier.chooseClientAlias(keyTypes, issuers, socket)
+    )
   }
 
   override def getServerAliases(keyType: String, issuers: Array[Principal]): Array[String] = {
-    tracer("getServerAliases", Map("keyType" -> keyType, "issuers" -> issuers), () => supplier.getServerAliases(keyType, issuers))
+    tracer(
+      "getServerAliases",
+      Map("keyType" -> keyType, "issuers" -> issuers),
+      () => supplier.getServerAliases(keyType, issuers)
+    )
   }
 
   override def chooseServerAlias(keyType: String, issuers: Array[Principal], socket: Socket): String = {
-    tracer("chooseServerAlias", Map("keyType" -> keyType, "issuers" -> issuers, "socket" -> socket), () => supplier.chooseServerAlias(keyType, issuers, socket))
+    tracer(
+      "chooseServerAlias",
+      Map("keyType" -> keyType, "issuers" -> issuers, "socket" -> socket),
+      () => supplier.chooseServerAlias(keyType, issuers, socket)
+    )
   }
 
   override def getCertificateChain(alias: String): Array[X509Certificate] = {

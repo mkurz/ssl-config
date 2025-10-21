@@ -5,19 +5,32 @@
 package com.typesafe.sslconfig.ssl.tracing
 
 import java.nio.ByteBuffer
+import javax.net.ssl.SSLEngine
+import javax.net.ssl.SSLEngineResult
+import javax.net.ssl.SSLSession
 
 import com.typesafe.sslconfig.ssl.SSLDebugConfig
 import com.typesafe.sslconfig.util.LoggerFactory
-import javax.net.ssl.{ SSLEngine, SSLEngineResult, SSLSession }
 
-private[sslconfig] class TracingSSLEngine(engine: => SSLEngine, debug: SSLDebugConfig)(implicit loggerFactory: LoggerFactory) extends SSLEngine with TraceLogger {
+private[sslconfig] class TracingSSLEngine(engine: => SSLEngine, debug: SSLDebugConfig)(
+    implicit loggerFactory: LoggerFactory
+) extends SSLEngine
+    with TraceLogger {
 
   override def wrap(srcs: Array[ByteBuffer], offset: Int, length: Int, dst: ByteBuffer): SSLEngineResult = {
-    tracer("wrap", Map("srcs" -> srcs, "offset" -> offset, "length" -> length, "dst" -> dst), () => engine.wrap(srcs, offset, length, dst))
+    tracer(
+      "wrap",
+      Map("srcs" -> srcs, "offset" -> offset, "length" -> length, "dst" -> dst),
+      () => engine.wrap(srcs, offset, length, dst)
+    )
   }
 
   override def unwrap(src: ByteBuffer, dsts: Array[ByteBuffer], offset: Int, length: Int): SSLEngineResult = {
-    tracer("wrap", Map("src" -> src, "dsts" -> dsts, "offset" -> offset, "length" -> length), () => engine.unwrap(src, dsts, offset, length))
+    tracer(
+      "wrap",
+      Map("src" -> src, "dsts" -> dsts, "offset" -> offset, "length" -> length),
+      () => engine.unwrap(src, dsts, offset, length)
+    )
   }
 
   override def getDelegatedTask: Runnable = {
@@ -101,7 +114,11 @@ private[sslconfig] class TracingSSLEngine(engine: => SSLEngine, debug: SSLDebugC
   }
 
   override def setEnableSessionCreation(enableSessionCreation: Boolean): Unit = {
-    tracer("setEnableSessionCreation", Map("enableSessionCreation" -> enableSessionCreation), () => engine.setEnableSessionCreation(enableSessionCreation))
+    tracer(
+      "setEnableSessionCreation",
+      Map("enableSessionCreation" -> enableSessionCreation),
+      () => engine.setEnableSessionCreation(enableSessionCreation)
+    )
   }
 
   override def getEnableSessionCreation: Boolean = {

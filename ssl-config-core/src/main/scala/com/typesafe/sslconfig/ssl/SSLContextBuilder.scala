@@ -8,10 +8,10 @@ import java.io._
 import java.net.URL
 import java.security._
 import java.security.cert._
+import javax.net.ssl._
 
 import com.typesafe.sslconfig.ssl.tracing._
 import com.typesafe.sslconfig.util.LoggerFactory
-import javax.net.ssl._
 
 trait SSLContextBuilder {
   def build(): SSLContext
@@ -25,7 +25,8 @@ class SimpleSSLContextBuilder(
     protocol: String,
     keyManagers: Seq[KeyManager],
     trustManagers: Seq[TrustManager],
-    secureRandom: Option[SecureRandom]) extends SSLContextBuilder {
+    secureRandom: Option[SecureRandom]
+) extends SSLContextBuilder {
 
   def nullIfEmpty[T](array: Array[T]) = {
     if (array.isEmpty) null else array
@@ -100,7 +101,8 @@ class ConfigSSLContextBuilder(
     mkLogger: LoggerFactory,
     info: SSLConfigSettings,
     keyManagerFactory: KeyManagerFactoryWrapper,
-    trustManagerFactory: TrustManagerFactoryWrapper) extends SSLContextBuilder {
+    trustManagerFactory: TrustManagerFactoryWrapper
+) extends SSLContextBuilder {
 
   protected val logger = mkLogger(getClass)
 
@@ -113,7 +115,14 @@ class ConfigSSLContextBuilder(
     } else Nil
 
     val trustManagers: Seq[TrustManager] = if (info.trustManagerConfig.trustStoreConfigs.nonEmpty) {
-      Seq(buildCompositeTrustManager(info.trustManagerConfig, info.checkRevocation.getOrElse(false), revocationLists, info.debug))
+      Seq(
+        buildCompositeTrustManager(
+          info.trustManagerConfig,
+          info.checkRevocation.getOrElse(false),
+          revocationLists,
+          info.debug
+        )
+      )
     } else Nil
 
     val context = buildSSLContext(info.protocol, keyManagers, trustManagers, info.secureRandom)
@@ -122,30 +131,31 @@ class ConfigSSLContextBuilder(
   }
 
   def buildSSLContext(
-    protocol: String,
-    keyManagers: Seq[KeyManager],
-    trustManagers: Seq[TrustManager],
-    secureRandom: Option[SecureRandom]) = {
+      protocol: String,
+      keyManagers: Seq[KeyManager],
+      trustManagers: Seq[TrustManager],
+      secureRandom: Option[SecureRandom]
+  ) = {
     val builder = new SimpleSSLContextBuilder(protocol, keyManagers, trustManagers, secureRandom)
     builder.build()
   }
 
   def buildCompositeKeyManager(keyManagerConfig: KeyManagerConfig, debug: SSLDebugConfig): CompositeX509KeyManager = {
-    val keyManagers = keyManagerConfig.keyStoreConfigs.map {
-      ksc =>
-        buildKeyManager(ksc, debug)
+    val keyManagers = keyManagerConfig.keyStoreConfigs.map { ksc =>
+      buildKeyManager(ksc, debug)
     }
     new CompositeX509KeyManager(mkLogger, keyManagers)
   }
 
   def buildCompositeTrustManager(
-    trustManagerInfo: TrustManagerConfig,
-    revocationEnabled: Boolean,
-    revocationLists: Option[Seq[CRL]], debug: SSLDebugConfig): CompositeX509TrustManager = {
+      trustManagerInfo: TrustManagerConfig,
+      revocationEnabled: Boolean,
+      revocationLists: Option[Seq[CRL]],
+      debug: SSLDebugConfig
+  ): CompositeX509TrustManager = {
 
-    val trustManagers = trustManagerInfo.trustStoreConfigs.map {
-      tsc =>
-        buildTrustManager(tsc, revocationEnabled, revocationLists, debug)
+    val trustManagers = trustManagerInfo.trustStoreConfigs.map { tsc =>
+      buildTrustManager(tsc, revocationEnabled, revocationLists, debug)
     }
     new CompositeX509TrustManager(mkLogger, trustManagers)
   }
@@ -153,31 +163,35 @@ class ConfigSSLContextBuilder(
   // Get either a string or file based keystore builder from config.
   def keyStoreBuilder(ksc: KeyStoreConfig): KeyStoreBuilder = {
     val password = ksc.password.map(_.toCharArray)
-    ksc.filePath.map { f =>
-      if (ksc.isFileOnClasspath) {
-        fileOnClasspathBuilder(ksc.storeType, f, password)
-      } else {
-        fileBuilder(ksc.storeType, f, password)
-      }
+    ksc.filePath
+      .map { f =>
+        if (ksc.isFileOnClasspath) {
+          fileOnClasspathBuilder(ksc.storeType, f, password)
+        } else {
+          fileBuilder(ksc.storeType, f, password)
+        }
 
-    }.getOrElse {
-      val data = ksc.data.getOrElse(throw new IllegalStateException("No keystore builder found!"))
-      stringBuilder(data)
-    }
+      }
+      .getOrElse {
+        val data = ksc.data.getOrElse(throw new IllegalStateException("No keystore builder found!"))
+        stringBuilder(data)
+      }
   }
 
   def trustStoreBuilder(tsc: TrustStoreConfig): KeyStoreBuilder = {
-    tsc.filePath.map { f =>
-      val password = tsc.password.map(_.toCharArray)
-      if (tsc.isFileOnClasspath) {
-        fileOnClasspathBuilder(tsc.storeType, f, password)
-      } else {
-        fileBuilder(tsc.storeType, f, password)
+    tsc.filePath
+      .map { f =>
+        val password = tsc.password.map(_.toCharArray)
+        if (tsc.isFileOnClasspath) {
+          fileOnClasspathBuilder(tsc.storeType, f, password)
+        } else {
+          fileBuilder(tsc.storeType, f, password)
+        }
       }
-    }.getOrElse {
-      val data = tsc.data.getOrElse(throw new IllegalStateException("No truststore builder found!"))
-      stringBuilder(data)
-    }
+      .getOrElse {
+        val data = tsc.data.getOrElse(throw new IllegalStateException("No truststore builder found!"))
+        stringBuilder(data)
+      }
   }
 
   def fileBuilder(storeType: String, filePath: String, password: Option[Array[Char]]): KeyStoreBuilder = {
@@ -202,16 +216,17 @@ class ConfigSSLContextBuilder(
    * Builds a key manager from a keystore, using the KeyManagerFactory.
    */
   def buildKeyManager(ksc: KeyStoreConfig, debug: SSLDebugConfig): X509KeyManager = {
-    val keyStore = try {
-      keyStoreBuilder(ksc).build()
-    } catch {
-      case bpe: javax.crypto.BadPaddingException =>
-        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6415637
-        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6974037
-        // If you run into "Given final block not properly padded", then it's because you entered in the
-        // wrong password for the keystore, and JSSE tries to decrypt and only then verify the MAC.
-        throw new SecurityException("Mac verify error: invalid password?", bpe)
-    }
+    val keyStore =
+      try {
+        keyStoreBuilder(ksc).build()
+      } catch {
+        case bpe: javax.crypto.BadPaddingException =>
+          // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6415637
+          // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6974037
+          // If you run into "Given final block not properly padded", then it's because you entered in the
+          // wrong password for the keystore, and JSSE tries to decrypt and only then verify the MAC.
+          throw new SecurityException("Mac verify error: invalid password?", bpe)
+      }
 
     if (!validateStoreContainsPrivateKeys(ksc, keyStore)) {
       logger.warn(s"Client authentication is not possible as there are no private keys found in ${ksc.filePath}")
@@ -241,14 +256,13 @@ class ConfigSSLContextBuilder(
   // Should anyone have any interest in implementing this feature at all, they can implement this method and
   // submit a patch.
   def certificateRevocationList(sslConfig: SSLConfigSettings): Option[Seq[CRL]] = {
-    sslConfig.revocationLists.map {
-      urls =>
-        urls.map(generateCRLFromURL)
+    sslConfig.revocationLists.map { urls =>
+      urls.map(generateCRLFromURL)
     }
   }
 
   def generateCRL(inputStream: InputStream): CRL = {
-    val cf = CertificateFactory.getInstance("X509")
+    val cf  = CertificateFactory.getInstance("X509")
     val crl = cf.generateCRL(inputStream).asInstanceOf[X509CRL]
     crl
   }
@@ -267,7 +281,7 @@ class ConfigSSLContextBuilder(
 
   def generateCRLFromFile(file: File): CRL = {
     val fileStream = new BufferedInputStream(java.nio.file.Files.newInputStream(file.toPath))
-    val inStream = new DataInputStream(fileStream)
+    val inStream   = new DataInputStream(fileStream)
     try {
       generateCRL(inStream)
     } finally {
@@ -276,19 +290,21 @@ class ConfigSSLContextBuilder(
   }
 
   def buildTrustManagerParameters(
-    trustStore: KeyStore,
-    revocationEnabled: Boolean,
-    revocationLists: Option[Seq[CRL]]): CertPathTrustManagerParameters = {
+      trustStore: KeyStore,
+      revocationEnabled: Boolean,
+      revocationLists: Option[Seq[CRL]]
+  ): CertPathTrustManagerParameters = {
 
     val certSelect: X509CertSelector = new X509CertSelector
-    val pkixParameters = new PKIXBuilderParameters(trustStore, certSelect)
+    val pkixParameters               = new PKIXBuilderParameters(trustStore, certSelect)
     pkixParameters.setRevocationEnabled(revocationEnabled)
 
     // For the sake of completeness, set the static revocation list if it exists...
-    revocationLists.map {
-      crlList =>
-        import com.typesafe.sslconfig.Compat.CollectionConverters._
-        pkixParameters.addCertStore(CertStore.getInstance("Collection", new CollectionCertStoreParameters(crlList.asJavaCollection)))
+    revocationLists.map { crlList =>
+      import com.typesafe.sslconfig.Compat.CollectionConverters._
+      pkixParameters.addCertStore(
+        CertStore.getInstance("Collection", new CollectionCertStoreParameters(crlList.asJavaCollection))
+      )
     }
     new CertPathTrustManagerParameters(pkixParameters)
   }
@@ -297,18 +313,16 @@ class ConfigSSLContextBuilder(
    * Builds trust managers, using a TrustManagerFactory internally.
    */
   def buildTrustManager(
-    tsc: TrustStoreConfig,
-    revocationEnabled: Boolean,
-    revocationLists: Option[Seq[CRL]],
-    debug: SSLDebugConfig): X509TrustManager = {
+      tsc: TrustStoreConfig,
+      revocationEnabled: Boolean,
+      revocationLists: Option[Seq[CRL]],
+      debug: SSLDebugConfig
+  ): X509TrustManager = {
 
-    val factory = trustManagerFactory
+    val factory    = trustManagerFactory
     val trustStore = trustStoreBuilder(tsc).build()
 
-    val trustManagerParameters = buildTrustManagerParameters(
-      trustStore,
-      revocationEnabled,
-      revocationLists)
+    val trustManagerParameters = buildTrustManagerParameters(trustStore, revocationEnabled, revocationLists)
 
     factory.init(trustManagerParameters)
     val trustManagers = factory.getTrustManagers
@@ -329,7 +343,7 @@ class ConfigSSLContextBuilder(
     import com.typesafe.sslconfig.Compat.CollectionConverters._
 
     // Is there actually a private key being stored in this key store?
-    val password = ksc.password.map(_.toCharArray).orNull
+    val password            = ksc.password.map(_.toCharArray).orNull
     var containsPrivateKeys = false
     for (keyAlias <- keyStore.aliases().asScala) {
       val key = keyStore.getKey(keyAlias, password)
@@ -340,7 +354,8 @@ class ConfigSSLContextBuilder(
 
         case otherKey =>
           // We want to warn on every failure, as this is not the correct setup for a key store.
-          val msg = s"validateStoreContainsPrivateKeys: No private key found for alias $keyAlias, it cannot be used for client authentication"
+          val msg =
+            s"validateStoreContainsPrivateKeys: No private key found for alias $keyAlias, it cannot be used for client authentication"
           logger.warn(msg)
       }
     }
