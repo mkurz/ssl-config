@@ -41,7 +41,7 @@ class HowsMySSLSpec extends PlaySpecification with AfterAll {
   }
 
   def configToMap(configString: String): Map[String, _] = {
-    import scala.collection.JavaConverters._
+    import com.typesafe.sslconfig.Compat.CollectionConverters._
     ConfigFactory.parseString(configString).root().unwrapped().asScala.toMap
   }
 
@@ -81,7 +81,7 @@ class HowsMySSLSpec extends PlaySpecification with AfterAll {
         """.stripMargin
 
       val configString = """
-         |//ssl-config.debug=["certpath", "ssl", "trustmanager"]
+         |//ssl-config.debug=["ssl", "trustmanager"]
          |ssl-config.protocol="TLSv1"
          |ssl-config.enabledProtocols=["TLSv1"]
          |

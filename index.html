@@ -6,11 +6,13 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content='SSL Config'/>
+<link rel="canonical" href="https://github.com/lightbend/ssl-configindex.html"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="js/page.js"></script>
 <script type="text/javascript" src="js/warnOldVersion.js"></script>
 <script type="text/javascript" src="js/groups.js"></script>
+<script type="text/javascript" src="js/snippets.js"></script>
 <link rel="stylesheet" type="text/css" href="lib/foundation/dist/foundation.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/page.css"/>
 
@@ -30,7 +32,7 @@
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.4.3
+0.7.0-M1+1-bf29cc99*
 </div>
 </div>
 <div class="nav-toc">
@@ -39,10 +41,8 @@
   <li><a href="CertificateGeneration.html" class="page">Generating X.509 Certificates</a></li>
   <li><a href="KeyStores.html" class="page">Configuring Trust Stores and Key Stores</a></li>
   <li><a href="Protocols.html" class="page">Configuring Protocols</a></li>
-  <li><a href="CipherSuites.html" class="page">Configuring Cipher Suites</a></li>
   <li><a href="CertificateRevocation.html" class="page">Configuring Certificate Revocation</a></li>
   <li><a href="HostnameVerification.html" class="page">Hostname Verification</a></li>
-  <li><a href="CertificateValidation.html" class="page">Configuring Certificate Validation</a></li>
   <li><a href="ExampleSSLConfig.html" class="page">Example Configurations</a></li>
   <li><a href="DefaultContext.html" class="page">Using the Default SSLContext</a></li>
   <li><a href="DebuggingSSL.html" class="page">Debugging SSL Connections</a></li>
@@ -79,7 +79,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.4.3
+0.7.0-M1+1-bf29cc99*
 </div>
 </div>
 <div class="nav-toc">
@@ -88,10 +88,8 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   <li><a href="CertificateGeneration.html" class="page">Generating X.509 Certificates</a></li>
   <li><a href="KeyStores.html" class="page">Configuring Trust Stores and Key Stores</a></li>
   <li><a href="Protocols.html" class="page">Configuring Protocols</a></li>
-  <li><a href="CipherSuites.html" class="page">Configuring Cipher Suites</a></li>
   <li><a href="CertificateRevocation.html" class="page">Configuring Certificate Revocation</a></li>
   <li><a href="HostnameVerification.html" class="page">Hostname Verification</a></li>
-  <li><a href="CertificateValidation.html" class="page">Configuring Certificate Validation</a></li>
   <li><a href="ExampleSSLConfig.html" class="page">Example Configurations</a></li>
   <li><a href="DefaultContext.html" class="page">Using the Default SSLContext</a></li>
   <li><a href="DebuggingSSL.html" class="page">Debugging SSL Connections</a></li>
@@ -119,7 +117,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <p>ssl-config was originally part of Play&rsquo;s WS module.</p></div>
 <p><a href="https://www.playframework.com/documentation/2.4.x/ScalaWS">Play WS</a> allows you to set up HTTPS completely from a configuration file, without the need to write code. It does this by layering the Java Secure Socket Extension (JSSE) with a configuration layer and with reasonable defaults.</p>
 <p>JDK 1.8 contains an implementation of JSSE which is <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/enhancements-8.html">significantly more advanced</a> than previous versions, and should be used if security is a priority.</p>
-<p>Copyright (C) 2009-2020 Lightbend Inc. &lt;<a href="https://www.lightbend.com">https://www.lightbend.com</a>&gt;</p>
+<p>Copyright (C) 2009-2025 Lightbend Inc. &lt;<a href="https://www.lightbend.com">https://www.lightbend.com</a>&gt;</p>
 <div class="toc ">
 <ul>
   <li><a href="index.html#further-reading" class="header">Further Reading</a></li>
@@ -151,13 +149,6 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   <ul>
     <li><a href="Protocols.html#defining-the-default-protocol" class="header">Defining the default protocol</a></li>
   </ul></li>
-  <li><a href="CipherSuites.html" class="page">Configuring Cipher Suites</a>
-  <ul>
-    <li><a href="CipherSuites.html#configuring-enabled-ciphers" class="header">Configuring Enabled Ciphers</a></li>
-    <li><a href="CipherSuites.html#recommendation-increase-the-dhe-key-size" class="header">Recommendation: increase the DHE key size</a></li>
-    <li><a href="CipherSuites.html#recommendation-use-ciphers-with-perfect-forward-secrecy" class="header">Recommendation: Use Ciphers with Perfect Forward Secrecy</a></li>
-    <li><a href="CipherSuites.html#disabling-weak-ciphers-and-weak-key-sizes-globally" class="header">Disabling Weak Ciphers and Weak Key Sizes Globally</a></li>
-  </ul></li>
   <li><a href="CertificateRevocation.html" class="page">Configuring Certificate Revocation</a>
   <ul>
     <li><a href="CertificateRevocation.html#further-reading" class="header">Further Reading</a></li>
@@ -165,14 +156,6 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   <li><a href="HostnameVerification.html" class="page">Hostname Verification</a>
   <ul>
     <li><a href="HostnameVerification.html#debugging" class="header">Debugging</a></li>
-  </ul></li>
-  <li><a href="CertificateValidation.html" class="page">Configuring Certificate Validation</a>
-  <ul>
-    <li><a href="CertificateValidation.html#disabling-certificates-with-weak-signature-algorithms" class="header">Disabling Certificates with Weak Signature Algorithms</a></li>
-    <li><a href="CertificateValidation.html#disabling-certificates-with-weak-key-sizes" class="header">Disabling Certificates With Weak Key Sizes</a></li>
-    <li><a href="CertificateValidation.html#disabling-weak-certificates-globally" class="header">Disabling Weak Certificates Globally</a></li>
-    <li><a href="CertificateValidation.html#debugging-certificate-validation" class="header">Debugging Certificate Validation</a></li>
-    <li><a href="CertificateValidation.html#further-reading" class="header">Further Reading</a></li>
   </ul></li>
   <li><a href="ExampleSSLConfig.html" class="page">Example Configurations</a>
   <ul>
@@ -207,6 +190,10 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   <li><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/certpath/CertPathProgGuide.html">PKI Programmer&rsquo;s  Guide</a></li>
   <li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html">keytool</a></li>
 </ul>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/index.md">here</a>.
+</div>
+
 <div class="nav-next">
 <p><strong>Next:</strong> <a href="WSQuickStart.html">Quick Start to WS SSL</a></p>
 </div>
@@ -262,7 +249,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 
 <!--
 <div class="copyright">
-<span class="text">&copy; 1980</span>
+<span class="text">&copy; 2025</span>
 <a href="https://www.example.com" class="logo">logo</a>
 </div>
 -->
@@ -287,7 +274,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <script type="text/javascript" src="lib/prettify/prettify.js"></script>
 <script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
-<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.4.3', '')});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.7.0-M1+1-bf29cc99-SNAPSHOT', 'https://github.com/lightbend/ssl-config')});</script>
 
 
 </html>

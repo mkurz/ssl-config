@@ -6,11 +6,13 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content='SSL Config'/>
+<link rel="canonical" href="https://github.com/lightbend/ssl-configLooseSSL.html"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="js/page.js"></script>
 <script type="text/javascript" src="js/warnOldVersion.js"></script>
 <script type="text/javascript" src="js/groups.js"></script>
+<script type="text/javascript" src="js/snippets.js"></script>
 <link rel="stylesheet" type="text/css" href="lib/foundation/dist/foundation.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/page.css"/>
 
@@ -30,7 +32,7 @@
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.4.3
+0.7.0-M1+1-bf29cc99*
 </div>
 </div>
 <div class="nav-toc">
@@ -39,10 +41,8 @@
   <li><a href="CertificateGeneration.html" class="page">Generating X.509 Certificates</a></li>
   <li><a href="KeyStores.html" class="page">Configuring Trust Stores and Key Stores</a></li>
   <li><a href="Protocols.html" class="page">Configuring Protocols</a></li>
-  <li><a href="CipherSuites.html" class="page">Configuring Cipher Suites</a></li>
   <li><a href="CertificateRevocation.html" class="page">Configuring Certificate Revocation</a></li>
   <li><a href="HostnameVerification.html" class="page">Hostname Verification</a></li>
-  <li><a href="CertificateValidation.html" class="page">Configuring Certificate Validation</a></li>
   <li><a href="ExampleSSLConfig.html" class="page">Example Configurations</a></li>
   <li><a href="DefaultContext.html" class="page">Using the Default SSLContext</a></li>
   <li><a href="DebuggingSSL.html" class="page">Debugging SSL Connections</a></li>
@@ -79,7 +79,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.4.3
+0.7.0-M1+1-bf29cc99*
 </div>
 </div>
 <div class="nav-toc">
@@ -88,10 +88,8 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
   <li><a href="CertificateGeneration.html" class="page">Generating X.509 Certificates</a></li>
   <li><a href="KeyStores.html" class="page">Configuring Trust Stores and Key Stores</a></li>
   <li><a href="Protocols.html" class="page">Configuring Protocols</a></li>
-  <li><a href="CipherSuites.html" class="page">Configuring Cipher Suites</a></li>
   <li><a href="CertificateRevocation.html" class="page">Configuring Certificate Revocation</a></li>
   <li><a href="HostnameVerification.html" class="page">Hostname Verification</a></li>
-  <li><a href="CertificateValidation.html" class="page">Configuring Certificate Validation</a></li>
   <li><a href="ExampleSSLConfig.html" class="page">Example Configurations</a></li>
   <li><a href="DefaultContext.html" class="page">Using the Default SSLContext</a></li>
   <li><a href="DebuggingSSL.html" class="page">Debugging SSL Connections</a></li>
@@ -163,23 +161,10 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 </code></pre>
 <p>With certificate verification completely disabled, you are vulnerable to attack from anyone on the network using a tool such as <a href="https://mitmproxy.org/">mitmproxy</a>.</p><div class="callout note "><div class="callout-title">Note</div>
 <p>By disabling certificate validation, you are also disabling hostname verification!</p></div>
-<h3><a href="#disabling-weak-ciphers-checking" name="disabling-weak-ciphers-checking" class="anchor"><span class="anchor-link"></span></a>Disabling Weak Ciphers Checking</h3>
-<p>There are some ciphers which are known to have flaws, and are <a href="http://sim.ivi.co/2011/08/jsse-oracle-provider-default-disabled.html">disabled</a> in 1.7. WS will throw an exception if a weak cipher is found in the <code>ssl-config.enabledCiphers</code> list. If you specifically want a weak cipher, set this flag:</p>
-<pre class="prettyprint"><code class="language-conf">ssl-config.loose.allowWeakCiphers=true
-</code></pre>
-<p>With weak cipher checking disabled, you are vulnerable to attackers that use forged certificates, such as <a href="http://arstechnica.com/security/2012/06/flame-crypto-breakthrough/">Flame</a>.</p>
-<h3><a href="#disabling-hostname-verification" name="disabling-hostname-verification" class="anchor"><span class="anchor-link"></span></a>Disabling Hostname Verification</h3>
-<p>If you want to disable hostname verification, you can set a loose flag:</p>
-<pre class="prettyprint"><code class="language-conf">ssl-config.loose.disableHostnameVerification=true
-</code></pre>
-<p>With hostname verification disabled, a DNS proxy such as <code>dnschef</code> can <a href="https://tersesystems.com/2014/03/31/testing-hostname-verification/">easily intercept communication</a>.</p><div class="callout note "><div class="callout-title">Note</div>
-<p>By disabling hostname verification, you are also disabling certificate verification!</p></div>
-<h3><a href="#disabled-protocols" name="disabled-protocols" class="anchor"><span class="anchor-link"></span></a>Disabled Protocols</h3>
-<p>WS recognizes &ldquo;SSLv3&rdquo;, &ldquo;SSLv2&rdquo; and &ldquo;SSLv2Hello&rdquo; as weak protocols with a number of <a href="https://www.schneier.com/paper-ssl.pdf">security issues</a>, and will throw an exception if they are in the <code>ssl-config.enabledProtocols</code> list. Virtually all servers support <code>TLSv1</code>, so there is no advantage in using these older protocols.</p>
-<p>If you specifically want a weak protocol, set the loose flag to disable the check:</p>
-<pre class="prettyprint"><code class="language-conf">ssl-config.loose.allowWeakProtocols=true
-</code></pre>
-<p>SSLv2 and SSLv2Hello (there is no v1) are obsolete and usage in the field is <a href="https://www.trustworthyinternet.org/ssl-pulse/">down to 25% on the public Internet</a>. SSLv3 is known to have <a href="http://www.yaksman.org/~lweith/ssl.pdf">security issues</a> compared to TLS. The only reason to turn this on is if you are connecting to a legacy server, but doing so does not make you vulnerable per se.</p>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/LooseSSL.md">here</a>.
+</div>
+
 <div class="nav-next">
 <p><strong>Next:</strong> <a href="TestingSSL.html">Testing SSL</a></p>
 </div>
@@ -238,7 +223,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 
 <!--
 <div class="copyright">
-<span class="text">&copy; 1980</span>
+<span class="text">&copy; 2025</span>
 <a href="https://www.example.com" class="logo">logo</a>
 </div>
 -->
@@ -263,7 +248,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <script type="text/javascript" src="lib/prettify/prettify.js"></script>
 <script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
-<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.4.3', '')});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.7.0-M1+1-bf29cc99-SNAPSHOT', 'https://github.com/lightbend/ssl-config')});</script>
 
 
 </html>
