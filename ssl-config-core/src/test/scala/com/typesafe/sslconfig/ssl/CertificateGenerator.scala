@@ -17,6 +17,12 @@ import scala.concurrent.duration.{ FiniteDuration, _ }
 /**
  * Used for testing only.  This relies on internal sun.security packages, so cannot be used in OpenJDK.
  */
+@deprecated(
+  "Uses internal sun.security.x509 classes. " +
+  "Works in Java 17 only with the `--add-exports=java.base/sun.security.x509=ALL-UNNAMED` flag. " +
+  "Does not work at all anymore with Java 21 and newer. " +
+  "To create certificates from code, use alternatives like Bouncy Castle instead.", "0.7.0"
+)
 object CertificateGenerator {
 
   // http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyPairGenerator
@@ -25,6 +31,7 @@ object CertificateGenerator {
   /**
    * Generates a certificate using RSA (which is available in 1.6).
    */
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def generateRSAWithSHA256(keySize: Int = 2048, from: Instant = Instant.now, duration: FiniteDuration = 365.days): X509Certificate = {
     val dn = "CN=localhost, OU=Unit Testing, O=Mavericks, L=Moon Base 1, ST=Cyberspace, C=CY"
     val to = from.plus(duration.toMillis)
@@ -35,6 +42,7 @@ object CertificateGenerator {
     generateCertificate(dn, pair, from.toDate, to.toDate, "SHA256withRSA")
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def generateRSAWithSHA1(keySize: Int = 2048, from: Instant = Instant.now, duration: FiniteDuration = 365.days): X509Certificate = {
     val dn = "CN=localhost, OU=Unit Testing, O=Mavericks, L=Moon Base 1, ST=Cyberspace, C=CY"
     val to = from.plus(duration.toMillis)
@@ -45,6 +53,7 @@ object CertificateGenerator {
     generateCertificate(dn, pair, from.toDate, to.toDate, "SHA1withRSA")
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def toPEM(certificate: X509Certificate) = {
     val encoder = java.util.Base64.getMimeEncoder()
     val certBegin = "-----BEGIN CERTIFICATE-----\n"
@@ -56,6 +65,7 @@ object CertificateGenerator {
     pemCert
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def generateRSAWithMD5(keySize: Int = 2048, from: Instant = Instant.now, duration: FiniteDuration = 365.days): X509Certificate = {
     val dn = "CN=localhost, OU=Unit Testing, O=Mavericks, L=Moon Base 1, ST=Cyberspace, C=CY"
     val to = from.plus(duration.toMillis)
@@ -66,6 +76,7 @@ object CertificateGenerator {
     generateCertificate(dn, pair, from.toDate, to.toDate, "MD5WithRSA")
   }
 
+  @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private[sslconfig] def generateCertificate(dn: String, pair: KeyPair, from: Date, to: Date, algorithm: String): X509Certificate = {
 
     val info: X509CertInfo = new X509CertInfo
