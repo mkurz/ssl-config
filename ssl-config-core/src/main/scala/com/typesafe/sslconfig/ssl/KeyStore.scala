@@ -8,16 +8,18 @@ import java.io._
 import java.security.KeyStore
 import java.security.cert._
 
+import com.typesafe.sslconfig.Compat._
+
 trait KeyStoreBuilder {
   def build(): KeyStore
 }
 
 object KeystoreFormats {
 
-  def loadCertificates(certs: TraversableOnce[Certificate]): KeyStore = {
+  def loadCertificates(certs: Once[Certificate]): KeyStore = {
     val keystore = KeyStore.getInstance(KeyStore.getDefaultType)
     keystore.load(null)
-    certs.foreach { cert =>
+    certs.iterator.foreach { cert =>
       val alias = cert.getSubjectX500Principal.getName
       keystore.setCertificateEntry(alias, cert)
     }
