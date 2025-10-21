@@ -5,8 +5,8 @@
 package com.typesafe.sslconfig.ssl
 
 import java.io._
-import java.security.KeyStore
 import java.security.cert._
+import java.security.KeyStore
 
 import com.typesafe.sslconfig.Compat._
 
@@ -48,9 +48,9 @@ class StringBasedKeyStoreBuilder(data: String) extends KeyStoreBuilder {
     val cf = CertificateFactory.getInstance("X.509")
     // CertificateFactory throws EOF on whitespace after end cert, which is very common in triple quoted strings.
     val trimmedString = certificateString.trim()
-    val is = new ByteArrayInputStream(trimmedString.getBytes("UTF-8"))
-    val bis = new BufferedInputStream(is)
-    val buffer = new scala.collection.mutable.ListBuffer[Certificate]()
+    val is            = new ByteArrayInputStream(trimmedString.getBytes("UTF-8"))
+    val bis           = new BufferedInputStream(is)
+    val buffer        = new scala.collection.mutable.ListBuffer[Certificate]()
     while (bis.available() > 0) {
       val cert = cf.generateCertificate(bis)
       buffer.append(cert)
@@ -65,10 +65,8 @@ class StringBasedKeyStoreBuilder(data: String) extends KeyStoreBuilder {
  *
  * @see java.security.cert.CertificateFactory
  */
-class FileBasedKeyStoreBuilder(
-    keyStoreType: String,
-    filePath: String,
-    password: Option[Array[Char]]) extends KeyStoreBuilder {
+class FileBasedKeyStoreBuilder(keyStoreType: String, filePath: String, password: Option[Array[Char]])
+    extends KeyStoreBuilder {
 
   def build(): KeyStore = {
     val file = new File(filePath)
@@ -89,7 +87,7 @@ class FileBasedKeyStoreBuilder(
     val inputStream = new BufferedInputStream(java.nio.file.Files.newInputStream(file.toPath))
     try {
       val storeType = keyStoreType
-      val store = KeyStore.getInstance(storeType)
+      val store     = KeyStore.getInstance(storeType)
       store.load(inputStream, password.orNull)
       store
     } finally {
@@ -99,19 +97,18 @@ class FileBasedKeyStoreBuilder(
 
   def readCertificates(file: File): Iterable[Certificate] = {
     import com.typesafe.sslconfig.Compat.CollectionConverters._
-    val cf = CertificateFactory.getInstance("X.509")
+    val cf  = CertificateFactory.getInstance("X.509")
     val fis = java.nio.file.Files.newInputStream(file.toPath)
     val bis = new BufferedInputStream(fis)
 
-    try cf.generateCertificates(bis).asScala finally bis.close()
+    try cf.generateCertificates(bis).asScala
+    finally bis.close()
   }
 
 }
 
-class FileOnClasspathBasedKeyStoreBuilder(
-    keyStoreType: String,
-    filePath: String,
-    password: Option[Array[Char]]) extends KeyStoreBuilder {
+class FileOnClasspathBasedKeyStoreBuilder(keyStoreType: String, filePath: String, password: Option[Array[Char]])
+    extends KeyStoreBuilder {
 
   def build(): KeyStore = {
 
@@ -132,7 +129,7 @@ class FileOnClasspathBasedKeyStoreBuilder(
     val inputStream = new BufferedInputStream(is)
     try {
       val storeType = keyStoreType
-      val store = KeyStore.getInstance(storeType)
+      val store     = KeyStore.getInstance(storeType)
       store.load(inputStream, password.orNull)
       store
     } finally {
@@ -142,10 +139,11 @@ class FileOnClasspathBasedKeyStoreBuilder(
 
   def readCertificates(is: InputStream): Iterable[Certificate] = {
     import com.typesafe.sslconfig.Compat.CollectionConverters._
-    val cf = CertificateFactory.getInstance("X.509")
+    val cf  = CertificateFactory.getInstance("X.509")
     val bis = new BufferedInputStream(is)
 
-    try cf.generateCertificates(bis).asScala finally bis.close()
+    try cf.generateCertificates(bis).asScala
+    finally bis.close()
   }
 
 }

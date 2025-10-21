@@ -26,7 +26,7 @@ object NoopLogger {
 
   def factory(): LoggerFactory = new LoggerFactory {
     override def apply(clazz: Class[?]) = _noop
-    override def apply(name: String) = _noop
+    override def apply(name: String)    = _noop
   }
 }
 final class NoopLogger extends NoDepsLogger {
@@ -37,7 +37,7 @@ final class NoopLogger extends NoDepsLogger {
 
   override def warn(msg: String): Unit = ()
 
-  override def error(msg: String): Unit = ()
+  override def error(msg: String): Unit                       = ()
   override def error(msg: String, throwable: Throwable): Unit = ()
 
   override def isDebugEnabled: Boolean = false
@@ -45,7 +45,7 @@ final class NoopLogger extends NoDepsLogger {
 object PrintlnLogger {
   def factory(): LoggerFactory = new LoggerFactory {
     override def apply(clazz: Class[?]) = new PrintlnLogger(clazz.getName)
-    override def apply(name: String) = new PrintlnLogger(name)
+    override def apply(name: String)    = new PrintlnLogger(name)
   }
 }
 final class PrintlnLogger(name: String) extends NoDepsLogger {
@@ -56,7 +56,7 @@ final class PrintlnLogger(name: String) extends NoDepsLogger {
 
   override def warn(msg: String): Unit = println(s"[WARN][$name] $msg")
 
-  override def error(msg: String): Unit = println(s"[ERROR][$name] $msg")
+  override def error(msg: String): Unit                       = println(s"[ERROR][$name] $msg")
   override def error(msg: String, throwable: Throwable): Unit = println(s"[ERROR][$name] $msg")
 
   override def isDebugEnabled: Boolean = true

@@ -4,7 +4,10 @@
 
 package com.typesafe.sslconfig
 
-import java.security.cert.{ CertPathValidatorResult, Certificate, PKIXCertPathValidatorResult, X509Certificate }
+import java.security.cert.CertPathValidatorResult
+import java.security.cert.Certificate
+import java.security.cert.PKIXCertPathValidatorResult
+import java.security.cert.X509Certificate
 
 import scala.util.Properties.javaVmName
 

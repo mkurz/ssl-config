@@ -4,18 +4,21 @@
 
 package com.typesafe.sslconfig.ssl
 
-import java.security.{ KeyPair, KeyPairGenerator, KeyStore, SecureRandom }
-
-import com.typesafe.sslconfig.util.{ LoggerFactory, NoDepsLogger }
-import sun.security.x509._
-import sun.security.util.ObjectIdentifier
-import java.util.Date
+import java.io._
 import java.math.BigInteger
 import java.security.cert.X509Certificate
-import java.io._
-
-import javax.net.ssl.KeyManagerFactory
 import java.security.interfaces.RSAPublicKey
+import java.security.KeyPair
+import java.security.KeyPairGenerator
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.util.Date
+import javax.net.ssl.KeyManagerFactory
+
+import com.typesafe.sslconfig.util.LoggerFactory
+import com.typesafe.sslconfig.util.NoDepsLogger
+import sun.security.util.ObjectIdentifier
+import sun.security.x509._
 
 /**
  * A fake key store with a single, selfsigned certificate and keypair. Includes also a `trustedCertEntry` for
@@ -34,9 +37,10 @@ import java.security.interfaces.RSAPublicKey
  */
 @deprecated(
   "Uses internal sun.security.x509 classes. " +
-  "Works in Java 17 only with the `--add-exports=java.base/sun.security.x509=ALL-UNNAMED` flag. " +
-  "Does not work at all anymore with Java 21 and newer. " +
-  "To create certificates from code, use alternatives like Bouncy Castle instead.", "0.7.0"
+    "Works in Java 17 only with the `--add-exports=java.base/sun.security.x509=ALL-UNNAMED` flag. " +
+    "Does not work at all anymore with Java 21 and newer. " +
+    "To create certificates from code, use alternatives like Bouncy Castle instead.",
+  "0.7.0"
 )
 object FakeKeyStore {
 
@@ -49,20 +53,21 @@ object FakeKeyStore {
     object Alias {
       // These two constants use a weird capitalization but that's what keystore uses internally (see class scaladoc)
       val trustedCertEntry = "sslconfig-selfsigned-trust"
-      val PrivateKeyEntry = "sslconfig-selfsigned"
+      val PrivateKeyEntry  = "sslconfig-selfsigned"
     }
 
-    val DistinguishedName = "CN=localhost, OU=Unit Testing (self-signed), O=Mavericks, L=SSL Config Base 1, ST=Cyberspace, C=CY"
+    val DistinguishedName =
+      "CN=localhost, OU=Unit Testing (self-signed), O=Mavericks, L=SSL Config Base 1, ST=Cyberspace, C=CY"
     val keyPassword: Array[Char] = EMPTY_PASSWORD
   }
 
   @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   object KeystoreSettings {
-    val GeneratedKeyStore: String = fileInDevModeDir("selfsigned.keystore")
-    val SignatureAlgorithmName = "SHA256withRSA"
-    val KeyPairAlgorithmName = "RSA"
-    val KeyPairKeyLength = 2048 // 2048 is the NIST acceptable key length until 2030
-    val KeystoreType = "JKS"
+    val GeneratedKeyStore: String     = fileInDevModeDir("selfsigned.keystore")
+    val SignatureAlgorithmName        = "SHA256withRSA"
+    val KeyPairAlgorithmName          = "RSA"
+    val KeyPairKeyLength              = 2048 // 2048 is the NIST acceptable key length until 2030
+    val KeystoreType                  = "JKS"
     val keystorePassword: Array[Char] = EMPTY_PASSWORD
   }
 
@@ -106,8 +111,8 @@ object FakeKeyStore {
 
     // Validity
     val validFrom = new Date()
-    val validTo = new Date(validFrom.getTime + 50L * 365L * 24L * 60L * 60L * 1000L)
-    val validity = new CertificateValidity(validFrom, validTo)
+    val validTo   = new Date(validFrom.getTime + 50L * 365L * 24L * 60L * 60L * 1000L)
+    val validity  = new CertificateValidity(validFrom, validTo)
     certInfo.set(X509CertInfo.VALIDITY, validity)
 
     // Subject and issuer
@@ -142,9 +147,10 @@ object FakeKeyStore {
  */
 @deprecated(
   "Uses internal sun.security.x509 classes. " +
-  "Works in Java 17 only with the `--add-exports=java.base/sun.security.x509=ALL-UNNAMED` flag. " +
-  "Does not work at all anymore with Java 21 and newer. " +
-  "To create certificates from code, use alternatives like Bouncy Castle instead.", "0.7.0"
+    "Works in Java 17 only with the `--add-exports=java.base/sun.security.x509=ALL-UNNAMED` flag. " +
+    "Does not work at all anymore with Java 21 and newer. " +
+    "To create certificates from code, use alternatives like Bouncy Castle instead.",
+  "0.7.0"
 )
 final class FakeKeyStore(mkLogger: LoggerFactory) {
 
@@ -176,7 +182,7 @@ final class FakeKeyStore(mkLogger: LoggerFactory) {
   @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private def loadKeyStore(file: File): KeyStore = {
     val keyStore: KeyStore = KeyStore.getInstance(KeystoreSettings.KeystoreType)
-    val in = java.nio.file.Files.newInputStream(file.toPath)
+    val in                 = java.nio.file.Files.newInputStream(file.toPath)
     try {
       keyStore.load(in, "".toCharArray)
     } finally {
@@ -188,22 +194,26 @@ final class FakeKeyStore(mkLogger: LoggerFactory) {
   @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   private[ssl] def certificateTooWeak(c: java.security.cert.Certificate): Boolean = {
     val key: RSAPublicKey = c.getPublicKey.asInstanceOf[RSAPublicKey]
-    key.getModulus.bitLength < KeystoreSettings.KeyPairKeyLength || c.asInstanceOf[X509CertImpl].getSigAlgName != KeystoreSettings.SignatureAlgorithmName
+    key.getModulus.bitLength < KeystoreSettings.KeyPairKeyLength || c
+      .asInstanceOf[X509CertImpl]
+      .getSigAlgName != KeystoreSettings.SignatureAlgorithmName
   }
 
   /** Public only for consumption by Play/Lagom. */
   @deprecated("Uses internal sun.security.x509 classes. Java 17 requires add-exports flags; Java 21 fails.", "0.7.0")
   def createKeyStore(appPath: File): KeyStore = {
     val keyStoreFile = getKeyStoreFilePath(appPath)
-    val keyStoreDir = keyStoreFile.getParentFile
+    val keyStoreDir  = keyStoreFile.getParentFile
 
     createKeystoreParentDirectory(keyStoreDir)
 
     val keyStore: KeyStore = synchronized(if (shouldGenerate(keyStoreFile)) {
-      logger.info(s"Generating HTTPS key pair in ${keyStoreFile.getAbsolutePath} - this may take some time. If nothing happens, try moving the mouse/typing on the keyboard to generate some entropy.")
+      logger.info(
+        s"Generating HTTPS key pair in ${keyStoreFile.getAbsolutePath} - this may take some time. If nothing happens, try moving the mouse/typing on the keyboard to generate some entropy."
+      )
 
       val freshKeyStore: KeyStore = generateKeyStore
-      val out = java.nio.file.Files.newOutputStream(keyStoreFile.toPath)
+      val out                     = java.nio.file.Files.newOutputStream(keyStoreFile.toPath)
       try {
         freshKeyStore.store(out, KeystoreSettings.keystorePassword)
       } finally {
@@ -229,11 +239,15 @@ final class FakeKeyStore(mkLogger: LoggerFactory) {
     } else if (keyStoreDir.exists() && keyStoreDir.isFile) {
       // File.mkdirs also returns false when there is a file for that path.
       // A consumer will then fail to write the keystore file later, so we fail fast here.
-      throw new IllegalStateException(s"$keyStoreDir exists, but it is NOT a directory, making it not possible to generate a key store file.")
+      throw new IllegalStateException(
+        s"$keyStoreDir exists, but it is NOT a directory, making it not possible to generate a key store file."
+      )
     } else {
       // Not being able to create a directory inside target folder is weird, but if it happens
       // a consumer will then fail to write the keystore file later, so we fail fast here.
-      throw new IllegalStateException(s"Failed to create $keyStoreDir. Check if there is permission to create such folder.")
+      throw new IllegalStateException(
+        s"Failed to create $keyStoreDir. Check if there is permission to create such folder."
+      )
     }
   }
 

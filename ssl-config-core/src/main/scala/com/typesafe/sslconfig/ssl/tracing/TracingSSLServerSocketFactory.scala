@@ -4,13 +4,17 @@
 
 package com.typesafe.sslconfig.ssl.tracing
 
-import java.net.{ InetAddress, ServerSocket }
+import java.net.InetAddress
+import java.net.ServerSocket
+import javax.net.ssl.SSLServerSocketFactory
 
 import com.typesafe.sslconfig.ssl.SSLDebugConfig
 import com.typesafe.sslconfig.util.LoggerFactory
-import javax.net.ssl.SSLServerSocketFactory
 
-private[sslconfig] class TracingSSLServerSocketFactory(factory: => SSLServerSocketFactory, debug: SSLDebugConfig)(implicit lf: LoggerFactory) extends SSLServerSocketFactory with TraceLogger {
+private[sslconfig] class TracingSSLServerSocketFactory(factory: => SSLServerSocketFactory, debug: SSLDebugConfig)(
+    implicit lf: LoggerFactory
+) extends SSLServerSocketFactory
+    with TraceLogger {
 
   override def createServerSocket = {
     tracer("createServerSocket", Map(), () => factory.createServerSocket())
@@ -21,11 +25,19 @@ private[sslconfig] class TracingSSLServerSocketFactory(factory: => SSLServerSock
   }
 
   override def createServerSocket(port: Int, backlog: Int): ServerSocket = {
-    tracer("createServerSocket", Map("port" -> port, "backlog" -> backlog), () => factory.createServerSocket(port, backlog))
+    tracer(
+      "createServerSocket",
+      Map("port" -> port, "backlog" -> backlog),
+      () => factory.createServerSocket(port, backlog)
+    )
   }
 
   override def createServerSocket(port: Int, backlog: Int, ifAddress: InetAddress): ServerSocket = {
-    tracer("createServerSocket", Map("port" -> port, "backlog" -> backlog, "ifAddress" -> ifAddress), () => factory.createServerSocket(port, backlog, ifAddress))
+    tracer(
+      "createServerSocket",
+      Map("port" -> port, "backlog" -> backlog, "ifAddress" -> ifAddress),
+      () => factory.createServerSocket(port, backlog, ifAddress)
+    )
   }
 
   override def getDefaultCipherSuites: Array[String] = {

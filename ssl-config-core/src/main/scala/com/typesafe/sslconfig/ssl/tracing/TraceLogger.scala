@@ -4,23 +4,26 @@
 
 package com.typesafe.sslconfig.ssl.tracing
 
-import java.security.Principal
 import java.security.cert.X509Certificate
+import java.security.Principal
+
+import scala.util.control.NonFatal
 
 import com.typesafe.sslconfig.ssl
-import com.typesafe.sslconfig.util.{ LoggerFactory, NoDepsLogger }
-
+import com.typesafe.sslconfig.util.LoggerFactory
+import com.typesafe.sslconfig.util.NoDepsLogger
 import com.typesafe.sslconfig.Compat._
-import scala.util.control.NonFatal
 
 private[sslconfig] trait TraceLogger {
 
   def isLogEnabled(methodName: String, parameters: Map[String, Any]): Boolean
 
-  def tracer[T, E <: AnyRef](methodName: String, parameters: Map[String, Any], function: () => T)(implicit loggerFactory: LoggerFactory): T = {
-    val logger = loggerFactory(getClass)
+  def tracer[T, E <: AnyRef](methodName: String, parameters: Map[String, Any], function: () => T)(
+      implicit loggerFactory: LoggerFactory
+  ): T = {
+    val logger       = loggerFactory(getClass)
     val methodParams = parameters.mapValuesView(mapValue).mkString(",")
-    val enabled = isLogEnabled(methodName, parameters)
+    val enabled      = isLogEnabled(methodName, parameters)
     if (enabled) {
       entry(logger, methodName, methodParams)
     }
@@ -45,7 +48,7 @@ private[sslconfig] trait TraceLogger {
         s"Array(${ssl.debugChain(v).mkString(", ")})"
       case v: Array[Principal] =>
         s"Array(${v.mkString(", ")})"
-      case v: Array[_] =>
+      case v: Array[?] =>
         s"Array(${v.mkString(", ")})"
       case v: Any =>
         v.toString

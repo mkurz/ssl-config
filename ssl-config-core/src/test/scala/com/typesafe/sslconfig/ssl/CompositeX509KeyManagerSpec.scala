@@ -6,34 +6,43 @@ package com.typesafe.sslconfig.ssl
 
 import java.net.Socket
 import java.security.cert.X509Certificate
-import java.security.{ Principal, PrivateKey }
+import java.security.Principal
+import java.security.PrivateKey
+import javax.net.ssl.SSLEngine
+import javax.net.ssl.X509ExtendedKeyManager
+import javax.net.ssl.X509KeyManager
 
 import com.typesafe.sslconfig.util.NoopLogger
-import javax.net.ssl.{ SSLEngine, X509ExtendedKeyManager, X509KeyManager }
-import org.specs2.mutable._
-import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
+import org.mockito.Mockito._
+import org.specs2.mutable._
 
 object CompositeX509KeyManagerSpec extends Specification {
 
-  def mockExtendedX509KeyManager(clientResponse: String = null, serverResponse: String = null) = new X509ExtendedKeyManager() {
+  def mockExtendedX509KeyManager(clientResponse: String = null, serverResponse: String = null) =
+    new X509ExtendedKeyManager() {
 
-    override def chooseEngineClientAlias(keyType: Array[String], issuers: Array[Principal], engine: SSLEngine): String = clientResponse
+      override def chooseEngineClientAlias(
+          keyType: Array[String],
+          issuers: Array[Principal],
+          engine: SSLEngine
+      ): String = clientResponse
 
-    override def chooseEngineServerAlias(keyType: String, issuers: Array[Principal], engine: SSLEngine): String = serverResponse
+      override def chooseEngineServerAlias(keyType: String, issuers: Array[Principal], engine: SSLEngine): String =
+        serverResponse
 
-    def getClientAliases(keyType: String, issuers: Array[Principal]): Array[String] = ???
+      def getClientAliases(keyType: String, issuers: Array[Principal]): Array[String] = ???
 
-    def chooseClientAlias(keyType: Array[String], issuers: Array[Principal], socket: Socket): String = ???
+      def chooseClientAlias(keyType: Array[String], issuers: Array[Principal], socket: Socket): String = ???
 
-    def getServerAliases(keyType: String, issuers: Array[Principal]): Array[String] = ???
+      def getServerAliases(keyType: String, issuers: Array[Principal]): Array[String] = ???
 
-    def chooseServerAlias(keyType: String, issuers: Array[Principal], socket: Socket): String = ???
+      def chooseServerAlias(keyType: String, issuers: Array[Principal], socket: Socket): String = ???
 
-    def getCertificateChain(alias: String): Array[X509Certificate] = ???
+      def getCertificateChain(alias: String): Array[X509Certificate] = ???
 
-    def getPrivateKey(alias: String): PrivateKey = ???
-  }
+      def getPrivateKey(alias: String): PrivateKey = ???
+    }
   val mkLogger = NoopLogger.factory()
 
   "CompositeX509KeyManager" should {
@@ -41,10 +50,10 @@ object CompositeX509KeyManagerSpec extends Specification {
     "chooseEngineClientAlias" should {
       "not do anything with a X509KeyManager" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = Array("derp")
-        val issuers = Array[Principal]()
-        val engine = mock(classOf[SSLEngine])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = Array("derp")
+        val issuers        = Array[Principal]()
+        val engine         = mock(classOf[SSLEngine])
 
         val clientAlias = keyManager.chooseEngineClientAlias(keyType = keyType, issuers = issuers, engine = engine)
         clientAlias must beNull
@@ -52,10 +61,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return a result" in {
         val mockKeyManager = mockExtendedX509KeyManager(clientResponse = "clientAlias")
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = Array("derp")
-        val issuers = Array[Principal]()
-        val engine = mock(classOf[SSLEngine])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = Array("derp")
+        val issuers        = Array[Principal]()
+        val engine         = mock(classOf[SSLEngine])
 
         val clientAlias = keyManager.chooseEngineClientAlias(keyType = keyType, issuers = issuers, engine = engine)
         clientAlias must be_==("clientAlias")
@@ -63,10 +72,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mockExtendedX509KeyManager()
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = Array("derp")
-        val issuers = Array[Principal]()
-        val engine = mock(classOf[SSLEngine])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = Array("derp")
+        val issuers        = Array[Principal]()
+        val engine         = mock(classOf[SSLEngine])
 
         val clientAlias = keyManager.chooseEngineClientAlias(keyType = keyType, issuers = issuers, engine = engine)
         clientAlias must beNull
@@ -74,11 +83,11 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null when issuers are null" in {
         val mockKeyManager = mockExtendedX509KeyManager()
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = Array("derp")
-        val issuers = null
-        val engine = mock(classOf[SSLEngine])
-        val clientAlias = keyManager.chooseEngineClientAlias(keyType = keyType, issuers = issuers, engine = engine)
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = Array("derp")
+        val issuers        = null
+        val engine         = mock(classOf[SSLEngine])
+        val clientAlias    = keyManager.chooseEngineClientAlias(keyType = keyType, issuers = issuers, engine = engine)
         clientAlias must beNull
       }
     }
@@ -87,10 +96,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "not do anything with a X509KeyManager" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
-        val engine = mock(classOf[SSLEngine])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
+        val engine         = mock(classOf[SSLEngine])
 
         val serverAlias = keyManager.chooseEngineServerAlias(keyType = keyType, issuers = issuers, engine = engine)
         serverAlias must beNull
@@ -98,10 +107,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return a result" in {
         val mockKeyManager = mockExtendedX509KeyManager(serverResponse = "serverAlias")
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
-        val engine = mock(classOf[SSLEngine])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
+        val engine         = mock(classOf[SSLEngine])
 
         val serverAlias = keyManager.chooseEngineServerAlias(keyType = keyType, issuers = issuers, engine = engine)
         serverAlias must be_==("serverAlias")
@@ -109,10 +118,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mockExtendedX509KeyManager()
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
-        val engine = mock(classOf[SSLEngine])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
+        val engine         = mock(classOf[SSLEngine])
 
         val serverAlias = keyManager.chooseEngineServerAlias(keyType = keyType, issuers = issuers, engine = engine)
         serverAlias must beNull
@@ -120,11 +129,11 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null when issuers are null" in {
         val mockKeyManager = mockExtendedX509KeyManager()
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = null
-        val engine = mock(classOf[SSLEngine])
-        val serverAlias = keyManager.chooseEngineServerAlias(keyType = keyType, issuers = issuers, engine = engine)
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = null
+        val engine         = mock(classOf[SSLEngine])
+        val serverAlias    = keyManager.chooseEngineServerAlias(keyType = keyType, issuers = issuers, engine = engine)
         serverAlias must beNull
       }
     }
@@ -132,10 +141,10 @@ object CompositeX509KeyManagerSpec extends Specification {
     "chooseClientAlias" should {
       "return a result" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = Array("derp")
-        val issuers = Array[Principal]()
-        val socket = mock(classOf[Socket])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = Array("derp")
+        val issuers        = Array[Principal]()
+        val socket         = mock(classOf[Socket])
 
         when(mockKeyManager.chooseClientAlias(keyType, issuers, socket)).thenReturn("clientAlias")
 
@@ -145,10 +154,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = Array("derp")
-        val issuers = Array[Principal]()
-        val socket = mock(classOf[Socket])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = Array("derp")
+        val issuers        = Array[Principal]()
+        val socket         = mock(classOf[Socket])
 
         when(mockKeyManager.chooseClientAlias(keyType, issuers, socket)).thenReturn(null)
 
@@ -158,10 +167,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null when issuers are null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = Array("derp")
-        val issuers = null
-        val socket = mock(classOf[Socket])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = Array("derp")
+        val issuers        = null
+        val socket         = mock(classOf[Socket])
         when(mockKeyManager.chooseClientAlias(keyType, issuers, socket)).thenReturn(null)
         val clientAlias = keyManager.chooseClientAlias(keyType = keyType, issuers = issuers, socket = socket)
         clientAlias must beNull
@@ -172,9 +181,9 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return a result" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
 
         when(mockKeyManager.getClientAliases(keyType, issuers)).thenReturn(Array("clientAliases"))
 
@@ -184,9 +193,9 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
 
         when(mockKeyManager.getClientAliases(keyType, issuers)).thenReturn(null)
 
@@ -196,9 +205,9 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null when issuers are null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = null
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = null
         when(mockKeyManager.getServerAliases(keyType, issuers)).thenReturn(null)
         val serverAliases = keyManager.getServerAliases(keyType = keyType, issuers = issuers)
         serverAliases must beNull
@@ -208,9 +217,9 @@ object CompositeX509KeyManagerSpec extends Specification {
     "getServerAliases" should {
       "return a result" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
 
         when(mockKeyManager.getServerAliases(keyType, issuers)).thenReturn(Array("serverAliases"))
 
@@ -220,9 +229,9 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
 
         when(mockKeyManager.getServerAliases(keyType, issuers)).thenReturn(null)
 
@@ -234,10 +243,10 @@ object CompositeX509KeyManagerSpec extends Specification {
     "chooseServerAlias" should {
       "work fine" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
-        val socket = mock(classOf[Socket])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
+        val socket         = mock(classOf[Socket])
 
         when(mockKeyManager.chooseServerAlias(keyType, issuers, socket)).thenReturn("serverAlias")
 
@@ -247,10 +256,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = Array[Principal]()
-        val socket = mock(classOf[Socket])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = Array[Principal]()
+        val socket         = mock(classOf[Socket])
 
         when(mockKeyManager.chooseServerAlias(keyType, issuers, socket)).thenReturn(null)
 
@@ -260,10 +269,10 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null when issuers are null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val keyType = "derp"
-        val issuers = null
-        val socket = mock(classOf[Socket])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val keyType        = "derp"
+        val issuers        = null
+        val socket         = mock(classOf[Socket])
         when(mockKeyManager.chooseServerAlias(keyType, issuers, socket)).thenReturn(null)
         val serverAlias = keyManager.chooseServerAlias(keyType = keyType, issuers = issuers, socket = socket)
         serverAlias must beNull
@@ -273,9 +282,9 @@ object CompositeX509KeyManagerSpec extends Specification {
     "getCertificateChain" should {
       "work fine" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val alias = "alias"
-        val cert = CertificateGenerator.generateRSAWithSHA256()
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val alias          = "alias"
+        val cert           = CertificateGenerator.generateRSAWithSHA256()
 
         when(mockKeyManager.getCertificateChain(alias)).thenReturn(Array(cert))
 
@@ -285,8 +294,8 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val alias = "alias"
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val alias          = "alias"
 
         when(mockKeyManager.getCertificateChain(alias)).thenReturn(null)
 
@@ -298,9 +307,9 @@ object CompositeX509KeyManagerSpec extends Specification {
     "getPrivateKey" should {
       "work fine" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val alias = "alias"
-        val privateKey = mock(classOf[PrivateKey])
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val alias          = "alias"
+        val privateKey     = mock(classOf[PrivateKey])
 
         when(mockKeyManager.getPrivateKey(alias)).thenReturn(privateKey)
 
@@ -310,8 +319,8 @@ object CompositeX509KeyManagerSpec extends Specification {
 
       "return null" in {
         val mockKeyManager = mock(classOf[X509KeyManager])
-        val keyManager = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
-        val alias = "alias"
+        val keyManager     = new CompositeX509KeyManager(mkLogger, Seq(mockKeyManager))
+        val alias          = "alias"
 
         when(mockKeyManager.getPrivateKey(alias)).thenReturn(null)
 
