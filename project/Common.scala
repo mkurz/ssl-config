@@ -31,15 +31,7 @@ object Common extends AutoPlugin {
         Developer("ktoso", "Konrad Malawski", "", url("https://project13.pl")),
       ),
       updateOptions := updateOptions.value.withCachedResolution(true),
-      scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
-      scalacOptions ++= {
-        CrossVersion.partialVersion(scalaVersion.value) match {
-          case Some((2, v)) if v <= 11 =>
-            Seq("-target:jvm-1.8")
-          case _ =>
-            Nil
-        }
-      },
+      scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature", "-release:8"),
       javacOptions ++= Seq("-encoding", "UTF-8", "-source", "1.8", "-target", "1.8"),
 
       // Header settings
