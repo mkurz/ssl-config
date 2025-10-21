@@ -1,8 +1,9 @@
 # SSL Config
 
-[![Build Status](https://travis-ci.com/lightbend/ssl-config.svg?branch=main)](https://travis-ci.com/lightbend/ssl-config) ![Maven metadata URL](https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/com/typesafe/ssl-config-core_2.13/maven-metadata.xml.svg)
+[![Build Status](https://github.com/lightbend/ssl-config/actions/workflows/ci.yml/badge.svg)](https://github.com/playframework/lightbend/ssl-config/actions/workflows/ci.yml)
+[![Maven](https://img.shields.io/maven-central/v/com.typesafe/ssl-config-core_2.13.svg?logo=apache-maven)](https://mvnrepository.com/artifact/com.typesafe/ssl-config-core_2.13)
 
-Goal and purpose of this library is to make [Play WS][] library as well as Akka HTTP "secure by default".
+Goal and purpose of this library is to make [Play WS][] library "secure by default".
 Sadly, while Java's security has been steadily improving some settings are still left up to the user,
 and certain algorithms which should never be used in a serious production system are still accepted by
 the default settings of the SSL/TLS infrastructure. These things are possible to fix, by providing specialized
@@ -22,11 +23,11 @@ The project is maintained on two branches:
 
 ## State of this project
 
-ssl-config at this point in time is used primarily internally in Akka HTTP, and is being evolved
+ssl-config at this point in time is used primarily internally in [Play WS][], and is being evolved
 towards being "the place" one configures all possible SSL/TLS related settings, mostly focused on
 the client side of things.
 
-The project is hosted externally of either Akka or Play, in order to foster convergence and re-use
+The project is hosted externally of Play, in order to foster convergence and re-use
 of the more tricky bits of configuring TLS.
 
 Binary compatibility is **not guaranteed** between versions (in the `0.x.z` series) of ssl-config at this point in time.
@@ -49,7 +50,7 @@ An excellent series by [Will Sargent](https://github.com/wsargent) about making
 
 ## License
 
-Lightbend 2015-2020, Apache 2.0
+Lightbend 2015-2025, Apache 2.0
 
 [Async Http Client]: https://github.com/AsyncHttpClient/async-http-client/
 [Play WS]: https://www.playframework.com/documentation/latest/ScalaWS
