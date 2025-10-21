@@ -30,7 +30,7 @@ package object ssl {
   }
 
   private[sslconfig] def debugCert(cert: X509Certificate): String = {
-    s"X509Certificate(serialNumber = ${cert.getSerialNumber.toString(16)}, subject = ${cert.getSubjectDN.getName})"
+    s"X509Certificate(serialNumber = ${cert.getSerialNumber.toString(16)}, subject = ${cert.getSubjectX500Principal.getName})"
   }
 
   def isOpenJdk: Boolean = javaVmName.contains("OpenJDK")
