@@ -269,7 +269,7 @@ object SSLLooseConfig {
  * The SSL configuration.
  *
  * @param default Whether we should use the default JVM SSL configuration or not.
- * @param protocol The SSL protocol to use. Defaults to TLSv1.2.
+ * @param protocol The SSL protocol to use. Defaults to TLSv1.3.
  * @param checkRevocation Whether revocation lists should be checked, if None, defaults to platform default setting.
  * @param revocationLists The revocation lists to check.
  * @param enabledCipherSuites If defined, override the platform default cipher suites.
@@ -282,11 +282,11 @@ object SSLLooseConfig {
  */
 final class SSLConfigSettings private[sslconfig] (
     val default: Boolean = false,
-    val protocol: String = "TLSv1.2",
+    val protocol: String = "TLSv1.3",
     val checkRevocation: Option[Boolean] = None,
     val revocationLists: Option[immutable.Seq[URL]] = None,
     val enabledCipherSuites: Option[immutable.Seq[String]] = None,
-    val enabledProtocols: Option[immutable.Seq[String]] = Some(List("TLSv1.2", "TLSv1.1", "TLSv1")),
+    val enabledProtocols: Option[immutable.Seq[String]] = Some(List("TLSv1.3", "TLSv1.2")),
     val keyManagerConfig: KeyManagerConfig = KeyManagerConfig(),
     val trustManagerConfig: TrustManagerConfig = TrustManagerConfig(),
     val secureRandom: Option[SecureRandom] = None,
