@@ -4,7 +4,7 @@
 
 package com.typesafe.sslconfig.ssl
 
-import java.net.URL
+import java.net.{ URI, URL }
 import java.security.{ KeyStore, SecureRandom }
 import java.util.Optional
 
@@ -367,7 +367,7 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
     val protocol = c.get[String]("protocol")
     val checkRevocation = c.getOptional[Boolean]("checkRevocation")
     val revocationLists: Option[immutable.Seq[URL]] = Some(
-      c.getSeq[String]("revocationLists").map(new URL(_))
+      c.getSeq[String]("revocationLists").map(new URI(_).toURL)
     ).filter(_.nonEmpty)
 
     val debug = parseDebug(c.get[EnrichedConfig]("debug"))
