@@ -2,7 +2,8 @@
  * Copyright (C) 2015 - 2021 Lightbend Inc. <https://www.lightbend.com>
  */
 
-import sbtheader._
+import sbtheader.AutomateHeaderPlugin
+import sbtheader.HeaderPlugin
 import sbt.Keys._
 import sbt._
 
@@ -50,7 +51,7 @@ object Common extends AutoPlugin {
 
       organizationName := "Lightbend",
       startYear := Some(2015),
-      licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
+      licenses := Seq(License.Apache2),
 
       HeaderPlugin.autoImport.headerLicense := {
         // To be manually updated yearly, preventing unrelated PR's to suddenly fail
