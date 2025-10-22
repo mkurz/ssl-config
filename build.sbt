@@ -55,12 +55,7 @@ lazy val sslConfigCore = project
       ProblemFilters.exclude[DirectMissingMethodProblem]("com.typesafe.sslconfig.ssl.SSLLooseConfig.allowWeakCiphers"),
       ProblemFilters
         .exclude[DirectMissingMethodProblem]("com.typesafe.sslconfig.ssl.SSLLooseConfig.allowWeakProtocols"),
-      ProblemFilters
-        .exclude[DirectMissingMethodProblem]("com.typesafe.sslconfig.ssl.SSLLooseConfig.disableHostnameVerification"),
       ProblemFilters.exclude[DirectMissingMethodProblem]("com.typesafe.sslconfig.ssl.SSLLooseConfig.disableSNI"),
-      ProblemFilters.exclude[DirectMissingMethodProblem](
-        "com.typesafe.sslconfig.ssl.SSLLooseConfig.withDisableHostnameVerification"
-      ),
       ProblemFilters.exclude[DirectMissingMethodProblem]("com.typesafe.sslconfig.ssl.SSLLooseConfig.withDisableSNI"),
       ProblemFilters.exclude[MissingClassProblem]("com.typesafe.sslconfig.ssl.AlgorithmChecker"),
       ProblemFilters.exclude[MissingClassProblem]("com.typesafe.sslconfig.ssl.ClientAuth"),
