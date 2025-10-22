@@ -71,10 +71,11 @@ jobs:
         shell: bash
         run: sbt '++ ${{ matrix.scala }}' githubWorkflowCheck
 
-      - shell: bash
+      - if: github.repository == 'lightbend/ssl-config'
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' validateCode test doc mimaReportBinaryIssues
 
-      - if: matrix.java != 'temurin@8'
+      - if: matrix.java != 'temurin@8' && github.repository == 'lightbend/ssl-config'
         shell: bash
         run: ./scripts/validate-docs.sh
 
@@ -91,7 +92,7 @@ jobs:
   publish:
     name: Publish Artifacts
     needs: [build]
-    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
+    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main') && (github.repository == 'lightbend/ssl-config')
     strategy:
       matrix:
         os: [ubuntu-latest]
