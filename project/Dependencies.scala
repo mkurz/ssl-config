@@ -6,7 +6,7 @@ object Version {
   val jodaTime        = "2.14.0"
   val jodaTimeConvert = "3.0.1"
 
-  val specs2 = "4.22.0"
+  val specs2 = "4.23.0"
 
   val scala212 = "2.12.20"
   val scala213 = "2.13.17"
