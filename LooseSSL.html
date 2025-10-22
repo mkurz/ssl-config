@@ -6,7 +6,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content='SSL Config'/>
-<link rel="canonical" href="https://github.com/lightbend/ssl-configLooseSSL.html"/>
+<link rel="canonical" href="https://lightbend.github.io/ssl-config/LooseSSL.html"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="js/page.js"></script>
@@ -32,7 +32,7 @@
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.7.0-M1+1-bf29cc99*
+0.7.0-M1+10-a7171bfd*
 </div>
 </div>
 <div class="nav-toc">
@@ -79,7 +79,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.7.0-M1+1-bf29cc99*
+0.7.0-M1+10-a7171bfd*
 </div>
 </div>
 <div class="nav-toc">
@@ -141,7 +141,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <p>Sensitive, company confidential information goes over web services. A paper discussing insecurities in WS clients was titled <a href="https://www.cs.utexas.edu/~shmat/shmat_ccs12.pdf">The Most Dangerous Code in the World: Validating SSL Certificates in Non-Browser Software</a>, and lists poor default configuration and explicit disabling of security options as the primary reason for exposure. The WS client has been configured as much as possible to be secure by default, and there are example configurations provided for your benefit.</p>
 <h2><a href="#mitigation" name="mitigation" class="anchor"><span class="anchor-link"></span></a>Mitigation</h2>
 <p>If you must turn on loose options, there are a couple of things you can do to minimize your exposure.</p>
-<p><strong>Custom Play WSClient</strong>: You can create a <a href="https://www.playframework.com/documentation/2.4.x/ScalaWS">custom Play WSClient</a> specifically for the server, using the <a href="api/scala/play/api/libs/ws/WSConfigParser.html"><code>WSConfigParser</code></a> together with <code>ConfigFactory.parseString</code>, and ensure it is never used outside that context.</p>
+<p><strong>Custom Play WSClient</strong>: You can create a <a href="https://www.playframework.com/documentation/latest/ScalaWS">custom Play WSClient</a> specifically for the server, using the <a href="api/scala/play/api/libs/ws/WSConfigParser.html"><code>WSConfigParser</code></a> together with <code>ConfigFactory.parseString</code>, and ensure it is never used outside that context.</p>
 <p><strong>Environment Scoping</strong>: You can define <a href="https://github.com/lightbend/config/blob/master/HOCON.md#substitution-fallback-to-environment-variables">environment variables in HOCON</a> to ensure that any loose options are not hardcoded in configuration files, and therefore cannot escape an development environment.</p>
 <p><strong>Runtime / Deployment Checks</strong>: You can add code to your deployment scripts or program that checks that <code>ssl-config.loose</code> options are not enabled in a production environment. The runtime mode can be found in the <a href="api/scala/play/api/Application.html"><code>Application.mode</code></a> method.</p>
 <h2><a href="#options" name="options" class="anchor"><span class="anchor-link"></span></a>Options</h2>
@@ -162,7 +162,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <p>With certificate verification completely disabled, you are vulnerable to attack from anyone on the network using a tool such as <a href="https://mitmproxy.org/">mitmproxy</a>.</p><div class="callout note "><div class="callout-title">Note</div>
 <p>By disabling certificate validation, you are also disabling hostname verification!</p></div>
 <div class="source-github">
-The source code for this page can be found <a href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/LooseSSL.md">here</a>.
+The source code for this page can be found <a href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/LooseSSL.md">here</a>.
 </div>
 
 <div class="nav-next">
@@ -248,7 +248,7 @@ The source code for this page can be found <a href="https://github.com/mkurz/ssl
 <script type="text/javascript" src="lib/prettify/prettify.js"></script>
 <script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
-<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.7.0-M1+1-bf29cc99-SNAPSHOT', 'https://github.com/lightbend/ssl-config')});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.7.0-M1+10-a7171bfd-SNAPSHOT', 'https://lightbend.github.io/ssl-config/')});</script>
 
 
 </html>

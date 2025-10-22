@@ -6,7 +6,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content='SSL Config'/>
-<link rel="canonical" href="https://github.com/lightbend/ssl-configCertificateGeneration.html"/>
+<link rel="canonical" href="https://lightbend.github.io/ssl-config/CertificateGeneration.html"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="js/page.js"></script>
@@ -32,7 +32,7 @@
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.7.0-M1+1-bf29cc99*
+0.7.0-M1+10-a7171bfd*
 </div>
 </div>
 <div class="nav-toc">
@@ -79,7 +79,7 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <span class="home-icon">⌂</span>SSL Config
 </a>
 <div class="version-number">
-0.7.0-M1+1-bf29cc99*
+0.7.0-M1+10-a7171bfd*
 </div>
 </div>
 <div class="nav-toc">
@@ -131,13 +131,13 @@ C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.
 <p>The examples below use keytool 1.8 for marking a certificate for CA usage or for a hostname.</p>
 <h2><a href="#generating-a-random-password" name="generating-a-random-password" class="anchor"><span class="anchor-link"></span></a>Generating a random password</h2>
 <p>Create a random password using pwgen (<code>brew install pwgen</code> if you&rsquo;re on a Mac):</p>
-<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/code/genpassword.sh#L2-L3" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`pwgen -Bs 10 1`
+<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/code/genpassword.sh#L2-L3" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`pwgen -Bs 10 1`
 echo $PW &gt; password</code></pre>
 <h2><a href="#server-configuration" name="server-configuration" class="anchor"><span class="anchor-link"></span></a>Server Configuration</h2>
 <p>You will need a server with a DNS hostname assigned, for hostname verification. In this example, we assume the hostname is <code>example.com</code>.</p>
 <h3><a href="#generating-a-server-ca" name="generating-a-server-ca" class="anchor"><span class="anchor-link"></span></a>Generating a server CA</h3>
 <p>The first step is to create a certificate authority that will sign the example.com certificate. The root CA certificate has a couple of additional attributes (ca:true, keyCertSign) that mark it explicitly as a CA certificate, and will be kept in a trust store.</p>
-<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/code/genca.sh#L4-L26" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
+<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/code/genca.sh#L4-L26" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
 
 # Create a self signed key pair root CA certificate.
 keytool -genkeypair -v \
@@ -162,7 +162,7 @@ keytool -export -v \
   -rfc</code></pre>
 <h3><a href="#generating-example-com-certificates" name="generating-example-com-certificates" class="anchor"><span class="anchor-link"></span></a>Generating example.com certificates</h3>
 <p>The example.com certificate is presented by the <code>example.com</code> server in the handshake.</p>
-<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/code/genserver.sh#L4-L62" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
+<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/code/genserver.sh#L4-L62" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
 
 # Create a server certificate, tied to example.com
 keytool -genkeypair -v \
@@ -233,7 +233,7 @@ Issuer: CN=exampleCA, OU=Example Org, O=Example Company, L=San Francisco, ST=Cal
 <h3><a href="#configuring-example-com-certificates-in-nginx" name="configuring-example-com-certificates-in-nginx" class="anchor"><span class="anchor-link"></span></a>Configuring example.com certificates in Nginx</h3>
 <p>If example.com does not use Java as a TLS termination point, and you are using nginx, you may need to export the certificates in PEM format.</p>
 <p>Unfortunately, keytool does not export private key information, so openssl must be installed to pull private keys.</p>
-<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/code/genserverexp.sh#L4-L36" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
+<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/code/genserverexp.sh#L4-L36" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
 
 # Export example.com&#39;s public certificate for use with nginx.
 keytool -export -v \
@@ -282,7 +282,7 @@ ssl_verify_client on;
 <p>There are two parts to setting up a client &ndash; configuring a trust store, and configuring client authentication.</p>
 <h3><a href="#configuring-a-trust-store" name="configuring-a-trust-store" class="anchor"><span class="anchor-link"></span></a>Configuring a Trust Store</h3>
 <p>Any clients need to see that the server&rsquo;s example.com certificate is trusted, but don&rsquo;t need to see the private key. Generate a trust store which contains only the certificate and hand that out to clients. Many java clients prefer to have the trust store in JKS format.</p>
-<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/code/gentruststore.sh#L4-L19" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
+<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/code/gentruststore.sh#L4-L19" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
 
 # Create a JKS keystore that trusts the example CA, with the default password.
 keytool -import -v \
@@ -325,7 +325,7 @@ Issuer: CN=exampleCA, OU=Example Org, O=Example Company, L=San Francisco, ST=Cal
   <li>The server will do an additional ClientKeyExchange in the handshake.</li>
 </ol>
 <p>The steps to create a client CA and a signed client certificate are broadly similiar to the server certificate generation, but for convenience are presented in a single script:</p>
-<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/code/genclient.sh#L4-L94" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
+<pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/code/genclient.sh#L4-L94" target="_blank" title="Go to snippet source">source</a><code class="language-sh">export PW=`cat password`
 
 # Create a self signed certificate &amp; private key to create a root certificate authority.
 keytool -genkeypair -v \
@@ -452,7 +452,7 @@ Issuer: CN=clientCA, OU=Example Org, O=Example Company, L=San Francisco, ST=Cali
   <li><a href="https://tersesystems.com/2014/03/20/fixing-x509-certificates/">Fixing X.509 Certificates</a></li>
 </ul>
 <div class="source-github">
-The source code for this page can be found <a href="https://github.com/mkurz/ssl-config/tree/master/documentation/src/main/paradox/CertificateGeneration.md">here</a>.
+The source code for this page can be found <a href="https://github.com/lightbend/ssl-config/tree/master/documentation/src/main/paradox/CertificateGeneration.md">here</a>.
 </div>
 
 <div class="nav-next">
@@ -542,7 +542,7 @@ The source code for this page can be found <a href="https://github.com/mkurz/ssl
 <script type="text/javascript" src="lib/prettify/prettify.js"></script>
 <script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
-<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.7.0-M1+1-bf29cc99-SNAPSHOT', 'https://github.com/lightbend/ssl-config')});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.7.0-M1+10-a7171bfd-SNAPSHOT', 'https://lightbend.github.io/ssl-config/')});</script>
 
 
 </html>
