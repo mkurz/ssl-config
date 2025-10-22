@@ -6,7 +6,6 @@ package com.typesafe.sslconfig.ssl
 
 import java.net.Socket
 import java.security._
-import java.security.cert.CertPathValidatorException
 import java.security.cert.X509Certificate
 import javax.net.ssl._
 

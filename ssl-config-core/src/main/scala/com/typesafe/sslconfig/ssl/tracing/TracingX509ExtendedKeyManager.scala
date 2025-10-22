@@ -8,7 +8,6 @@ import java.net.Socket
 import java.security.cert.X509Certificate
 import java.security.Principal
 import java.security.PrivateKey
-import javax.net.ssl.KeyManager
 import javax.net.ssl.SSLEngine
 import javax.net.ssl.X509ExtendedKeyManager
 
