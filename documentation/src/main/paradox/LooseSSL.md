@@ -81,7 +81,7 @@ example configurations provided for your benefit.
 If you must turn on loose options, there are a couple of things you can
 do to minimize your exposure.
 
-**Custom Play WSClient**: You can create a [custom Play WSClient](https://www.playframework.com/documentation/2.4.x/ScalaWS)
+**Custom Play WSClient**: You can create a [custom Play WSClient](https://www.playframework.com/documentation/latest/ScalaWS)
 specifically for the server, using the
 [`WSConfigParser`](api/scala/play/api/libs/ws/WSConfigParser.html)
 together with `ConfigFactory.parseString`, and ensure it is never used

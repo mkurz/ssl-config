@@ -6,7 +6,7 @@ ssl-config was originally part of Play's WS module.
 
 @@@
 
-[Play WS](https://www.playframework.com/documentation/2.4.x/ScalaWS) allows you to set up HTTPS completely from a
+[Play WS](https://www.playframework.com/documentation/latest/ScalaWS) allows you to set up HTTPS completely from a
 configuration file, without the need to write code. It does this by
 layering the Java Secure Socket Extension (JSSE) with a configuration
 layer and with reasonable defaults.
