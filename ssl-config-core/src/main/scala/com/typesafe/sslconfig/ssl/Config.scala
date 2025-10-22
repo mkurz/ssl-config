@@ -257,30 +257,36 @@ object SSLDebugConfig {
  *                                 default.
  * @param allowUnsafeRenegotiation Whether unsafe renegotiation should be allowed or not. If None, uses the platform
  *                                 default.
+ * @param disableHostnameVerification Whether hostname verification should be disabled. Be aware: SSL Config itself is not using this config.
+ *                                    However, it was kept because 3rd party libraries rely on its existence.
  * @param acceptAnyCertificate Whether any X.509 certificate should be accepted or not.
  */
 final class SSLLooseConfig private[sslconfig] (
     val acceptAnyCertificate: Boolean = false,
     val allowLegacyHelloMessages: Option[Boolean] = None,
-    val allowUnsafeRenegotiation: Option[Boolean] = None
+    val allowUnsafeRenegotiation: Option[Boolean] = None,
+    val disableHostnameVerification: Boolean = false,
 ) {
 
   def withAcceptAnyCertificate(value: Boolean): SSLLooseConfig             = copy(acceptAnyCertificate = value)
   def withAllowLegacyHelloMessages(value: Option[Boolean]): SSLLooseConfig = copy(allowLegacyHelloMessages = value)
   def withAllowUnsafeRenegotiation(value: Option[Boolean]): SSLLooseConfig = copy(allowUnsafeRenegotiation = value)
+  def withDisableHostnameVerification(value: Boolean): SSLLooseConfig      = copy(disableHostnameVerification = value)
 
   private def copy(
       acceptAnyCertificate: Boolean = acceptAnyCertificate,
       allowLegacyHelloMessages: Option[Boolean] = allowLegacyHelloMessages,
-      allowUnsafeRenegotiation: Option[Boolean] = allowUnsafeRenegotiation
+      allowUnsafeRenegotiation: Option[Boolean] = allowUnsafeRenegotiation,
+      disableHostnameVerification: Boolean = disableHostnameVerification,
   ): SSLLooseConfig = new SSLLooseConfig(
     acceptAnyCertificate = acceptAnyCertificate,
     allowLegacyHelloMessages = allowLegacyHelloMessages,
-    allowUnsafeRenegotiation = allowUnsafeRenegotiation
+    allowUnsafeRenegotiation = allowUnsafeRenegotiation,
+    disableHostnameVerification = disableHostnameVerification,
   )
 
   override def toString =
-    s"""SSLLooseConfig(${acceptAnyCertificate},${allowLegacyHelloMessages},${allowUnsafeRenegotiation})"""
+    s"""SSLLooseConfig(${acceptAnyCertificate},${allowLegacyHelloMessages},${allowUnsafeRenegotiation},${disableHostnameVerification})"""
 }
 object SSLLooseConfig {
   def apply() = new SSLLooseConfig()
@@ -437,13 +443,15 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
    */
   def parseLooseOptions(config: EnrichedConfig): SSLLooseConfig = {
 
-    val allowMessages            = config.getOptional[Boolean]("allowLegacyHelloMessages")
-    val allowUnsafeRenegotiation = config.getOptional[Boolean]("allowUnsafeRenegotiation")
-    val acceptAnyCertificate     = config.get[Boolean]("acceptAnyCertificate")
+    val allowMessages               = config.getOptional[Boolean]("allowLegacyHelloMessages")
+    val allowUnsafeRenegotiation    = config.getOptional[Boolean]("allowUnsafeRenegotiation")
+    val disableHostnameVerification = config.getOptional[Boolean]("disableHostnameVerification").getOrElse(false)
+    val acceptAnyCertificate        = config.get[Boolean]("acceptAnyCertificate")
 
     new SSLLooseConfig(
       allowLegacyHelloMessages = allowMessages,
       allowUnsafeRenegotiation = allowUnsafeRenegotiation,
+      disableHostnameVerification = disableHostnameVerification,
       acceptAnyCertificate = acceptAnyCertificate
     )
   }
