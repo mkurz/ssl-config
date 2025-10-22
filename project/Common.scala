@@ -18,21 +18,28 @@ import sbtheader.HeaderPlugin
  */
 object Common extends AutoPlugin {
 
+  object autoImport {
+    val githubOrg  = "lightbend"
+    val githubRepo = "ssl-config"
+  }
+
+  import autoImport._
+
   override def trigger = allRequirements
 
   override def requires = plugins.JvmPlugin && HeaderPlugin
 
   // AutomateHeaderPlugin is not an allRequirements-AutoPlugin, so explicitly add settings here:
-  override def projectSettings =
+  override def projectSettings = {
     AutomateHeaderPlugin.projectSettings ++
       Seq(
         organization := "com.typesafe",
-        homepage     := Some(url("https://lightbend.github.io/ssl-config/")),
+        homepage     := Some(url(s"https://${githubOrg}.github.io/${githubRepo}/")),
         scmInfo      := Some(
           ScmInfo(
-            url(s"https://github.com/lightbend/ssl-config"),
-            s"scm:git:https://github.com/lightbend/ssl-config.git",
-            Some(s"scm:git:git@github.com:lightbend/ssl-config.git")
+            url(s"https://github.com/${githubOrg}/${githubRepo}"),
+            s"scm:git:https://github.com/${githubOrg}/${githubRepo}.git",
+            Some(s"scm:git:git@github.com:${githubOrg}/${githubRepo}.git")
           )
         ),
         developers := List(
@@ -63,5 +70,6 @@ object Common extends AutoPlugin {
           )
         }
       )
+  }
 
 }

@@ -1,6 +1,7 @@
 import com.github.sbt.osgi.SbtOsgi
 import com.github.sbt.osgi.SbtOsgi.autoImport._
 import com.typesafe.tools.mima.core._
+import Common.autoImport._
 
 ThisBuild / scalaVersion       := Version.scala212
 ThisBuild / crossScalaVersions := Seq(Version.scala213, Version.scala212, Version.scala3)
@@ -159,11 +160,18 @@ def versionedImport(packageName: String, lower: String, upper: String) = s"""$pa
 addCommandAlias("validateCode", "headerCheckAll ; scalafmtSbtCheck ; scalafmtCheckAll")
 
 ThisBuild / githubWorkflowBuild := Seq(
-  WorkflowStep.Sbt(List("validateCode", "test", "doc", "mimaReportBinaryIssues")),
-  WorkflowStep.Run(List("./scripts/validate-docs.sh"), cond = Some("matrix.java != 'temurin@8'")),
+  WorkflowStep.Sbt(
+    List("validateCode", "test", "doc", "mimaReportBinaryIssues"),
+    cond = Some(s"github.repository == '${githubOrg}/${githubRepo}'")
+  ),
+  WorkflowStep.Run(
+    List("./scripts/validate-docs.sh"),
+    cond = Some(s"matrix.java != 'temurin@8' && github.repository == '${githubOrg}/${githubRepo}'")
+  ),
 )
 
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishCond           := Some(s"github.repository == '${githubOrg}/${githubRepo}'")
 ThisBuild / githubWorkflowPublishTargetBranches :=
   Seq(
     RefPredicate.StartsWith(Ref.Tag("v")),
