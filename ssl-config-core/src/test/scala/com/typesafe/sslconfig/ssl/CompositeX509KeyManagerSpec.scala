@@ -13,7 +13,6 @@ import javax.net.ssl.X509ExtendedKeyManager
 import javax.net.ssl.X509KeyManager
 
 import com.typesafe.sslconfig.util.NoopLogger
-import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.specs2.mutable._
 

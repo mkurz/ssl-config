@@ -17,7 +17,6 @@ import javax.net.ssl.KeyManagerFactory
 
 import com.typesafe.sslconfig.util.LoggerFactory
 import com.typesafe.sslconfig.util.NoDepsLogger
-import sun.security.util.ObjectIdentifier
 import sun.security.x509._
 
 /**
