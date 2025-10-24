@@ -66,6 +66,7 @@ addCommandAlias("validateCode", "headerCheckAll ; scalafmtSbtCheck ; scalafmtChe
 ThisBuild / githubWorkflowBuild := Seq(
   WorkflowStep.Sbt(
     List("validateCode", "test", "doc", "mimaReportBinaryIssues"),
+    env = Map("JAVA_TOOL_OPTIONS" -> "--add-exports=java.base/sun.security.x509=ALL-UNNAMED"),
     cond = Some(s"github.repository == '${githubOrg}/${githubRepo}'")
   ),
   WorkflowStep.Run(

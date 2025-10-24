@@ -69,6 +69,8 @@ jobs:
         run: sbt '++ ${{ matrix.scala }}' githubWorkflowCheck
 
       - if: github.repository == 'lightbend/ssl-config'
+        env:
+          JAVA_TOOL_OPTIONS: '--add-exports=java.base/sun.security.x509=ALL-UNNAMED'
         shell: bash
         run: sbt '++ ${{ matrix.scala }}' validateCode test doc mimaReportBinaryIssues
 
