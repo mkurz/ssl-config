@@ -302,6 +302,34 @@ object SSLLooseConfig {
 }
 
 /**
+ * Carries values which will be later set on an [[javax.net.ssl.SSLParameters]] object.
+ *
+ * @param clientAuth see [[ClientAuth]] for detailed docs on ClientAuth modes
+ */
+final class SSLParametersConfig private[sslconfig] (
+    val clientAuth: ClientAuth = ClientAuth.Default,
+    val protocols: scala.collection.immutable.Seq[String] = Nil
+) {
+
+  def withClientAuth(value: com.typesafe.sslconfig.ssl.ClientAuth): SSLParametersConfig = copy(clientAuth = value)
+  def withProtocols(value: scala.collection.immutable.Seq[String]): SSLParametersConfig = copy(protocols = value)
+
+  private def copy(
+      clientAuth: com.typesafe.sslconfig.ssl.ClientAuth = clientAuth,
+      protocols: scala.collection.immutable.Seq[String] = protocols
+  ): SSLParametersConfig = new SSLParametersConfig(clientAuth = clientAuth, protocols = protocols)
+
+  override def toString =
+    s"""SSLParametersConfig(${clientAuth},${protocols})"""
+}
+object SSLParametersConfig {
+  def apply() = new SSLParametersConfig()
+
+  /** Java API */
+  def getInstance() = apply()
+}
+
+/**
  * The SSL configuration.
  *
  * @param default Whether we should use the default JVM SSL configuration or not.
@@ -324,6 +352,7 @@ final class SSLConfigSettings private[sslconfig] (
     val revocationLists: Option[immutable.Seq[URL]] = None,
     val enabledCipherSuites: Option[immutable.Seq[String]] = None,
     val enabledProtocols: Option[immutable.Seq[String]] = Some(List("TLSv1.3", "TLSv1.2")),
+    val sslParametersConfig: SSLParametersConfig = SSLParametersConfig(),
     val keyManagerConfig: KeyManagerConfig = KeyManagerConfig(),
     val trustManagerConfig: TrustManagerConfig = TrustManagerConfig(),
     val hostnameVerifierClass: Class[? <: HostnameVerifier] = classOf[NoopHostnameVerifier],
@@ -347,7 +376,9 @@ final class SSLConfigSettings private[sslconfig] (
   def withProtocol(value: String): SSLConfigSettings                                                      = copy(protocol = value)
   def withRevocationLists(value: Option[scala.collection.immutable.Seq[java.net.URL]]): SSLConfigSettings =
     copy(revocationLists = value)
-  def withSecureRandom(value: Option[java.security.SecureRandom]): SSLConfigSettings                  = copy(secureRandom = value)
+  def withSecureRandom(value: Option[java.security.SecureRandom]): SSLConfigSettings                    = copy(secureRandom = value)
+  def withSslParametersConfig(value: com.typesafe.sslconfig.ssl.SSLParametersConfig): SSLConfigSettings =
+    copy(sslParametersConfig = value)
   def withTrustManagerConfig(value: com.typesafe.sslconfig.ssl.TrustManagerConfig): SSLConfigSettings =
     copy(trustManagerConfig = value)
 
@@ -363,6 +394,7 @@ final class SSLConfigSettings private[sslconfig] (
       protocol: String = protocol,
       revocationLists: Option[scala.collection.immutable.Seq[java.net.URL]] = revocationLists,
       secureRandom: Option[java.security.SecureRandom] = secureRandom,
+      sslParametersConfig: com.typesafe.sslconfig.ssl.SSLParametersConfig = sslParametersConfig,
       trustManagerConfig: com.typesafe.sslconfig.ssl.TrustManagerConfig = trustManagerConfig
   ): SSLConfigSettings = new SSLConfigSettings(
     checkRevocation = checkRevocation,
@@ -376,11 +408,12 @@ final class SSLConfigSettings private[sslconfig] (
     protocol = protocol,
     revocationLists = revocationLists,
     secureRandom = secureRandom,
+    sslParametersConfig = sslParametersConfig,
     trustManagerConfig = trustManagerConfig
   )
 
   override def toString =
-    s"""SSLConfig(${checkRevocation},${debug},${default},${enabledCipherSuites},${enabledProtocols},${hostnameVerifierClass},${keyManagerConfig},${loose},${protocol},${revocationLists},${secureRandom},${trustManagerConfig})"""
+    s"""SSLConfig(${checkRevocation},${debug},${default},${enabledCipherSuites},${enabledProtocols},${hostnameVerifierClass},${keyManagerConfig},${loose},${protocol},${revocationLists},${secureRandom},${sslParametersConfig},${trustManagerConfig})"""
 }
 object SSLConfigSettings {
   def apply() = new SSLConfigSettings()
@@ -440,6 +473,8 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
 
     val trustManagers = parseTrustManager(c.get[EnrichedConfig]("trustManager"))
 
+    val sslParametersConfig = parseSSLParameters(c.get[EnrichedConfig]("sslParameters"))
+
     new SSLConfigSettings(
       default = default,
       protocol = protocol,
@@ -449,6 +484,7 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
       enabledProtocols = protocols,
       keyManagerConfig = keyManagers,
       hostnameVerifierClass = hostnameVerifierClass,
+      sslParametersConfig = sslParametersConfig,
       trustManagerConfig = trustManagers,
       secureRandom = None,
       debug = debug,
@@ -575,4 +611,41 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
 
     new TrustManagerConfig(algorithm, trustStoreInfos)
   }
+
+  def parseSSLParameters(config: EnrichedConfig): SSLParametersConfig = {
+    // could instantiate SSLParameters directly, but seems less clean, here we only parse config
+
+    val clientAuth = config.getOptional[String]("clientAuth") match {
+      case Some("none")   => ClientAuth.None
+      case Some("want")   => ClientAuth.Want
+      case Some("need")   => ClientAuth.Need
+      case None | Some(_) => ClientAuth.Default
+    }
+
+    val protocols = config.getSeq[String]("protocols")
+
+    new SSLParametersConfig(clientAuth, protocols)
+  }
+}
+
+/**
+ * An SSLEngine can either demand, allow or ignore its peer’s authentication
+ * (via certificates), where `Need` will fail the handshake if the peer does
+ * not provide valid credentials, `Want` allows the peer to send credentials
+ * and verifies them if provided, and `None` disables peer certificate
+ * verification.
+ *
+ * See the documentation for `SSLEngine::setWantClientAuth` for more information.
+ */
+sealed abstract class ClientAuth
+object ClientAuth {
+  case object Default extends ClientAuth
+  case object None    extends ClientAuth
+  case object Want    extends ClientAuth
+  case object Need    extends ClientAuth
+
+  def none: ClientAuth        = None
+  def want: ClientAuth        = Want
+  def need: ClientAuth        = Need
+  def defaultAuth: ClientAuth = Default // since `default` is a Java keyword
 }
