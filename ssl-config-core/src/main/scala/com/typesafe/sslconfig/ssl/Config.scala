@@ -260,7 +260,8 @@ object SSLDebugConfig {
  *                                 default.
  * @param disableHostnameVerification Whether hostname verification should be disabled. Be aware: SSL Config itself is not using this config.
  *                                    However, it was kept because 3rd party libraries rely on its existence.
- * @param disableSNI Whether SNI should be disabled (up to client library to respect this setting or not)
+ * @param disableSNI Whether SNI should be disabled (up to client library to respect this setting or not). Be aware: SSL Config itself is not using this config.
+ *                   However, it was kept because 3rd party libraries rely on its existence.
  * @param acceptAnyCertificate Whether any X.509 certificate should be accepted or not.
  */
 final class SSLLooseConfig private[sslconfig] (
@@ -338,9 +339,12 @@ object SSLParametersConfig {
  * @param revocationLists The revocation lists to check.
  * @param enabledCipherSuites If defined, override the platform default cipher suites.
  * @param enabledProtocols If defined, override the platform default protocols.
+ * @param sslParametersConfig Be aware: SSL Config itself is not using this config.
+ *                            However, it was kept because 3rd party libraries rely on its existence.
  * @param keyManagerConfig The key manager configuration.
  * @param trustManagerConfig The trust manager configuration.
- * @param hostnameVerifierClass The hostname verifier class.
+ * @param hostnameVerifierClass The hostname verifier class. Be aware: SSL Config itself is not using this config.
+ *                              However, it was kept because 3rd party libraries rely on its existence.
  * @param secureRandom The SecureRandom instance to use. Let the platform choose if None.
  * @param debug The debug config.
  * @param loose Loose configuratino parameters
