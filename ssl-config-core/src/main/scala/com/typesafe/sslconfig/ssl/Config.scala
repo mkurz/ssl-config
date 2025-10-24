@@ -17,6 +17,7 @@ import scala.collection.immutable
 import scala.language.existentials
 
 import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 import com.typesafe.sslconfig.util.EnrichedConfig
 import com.typesafe.sslconfig.util.LoggerFactory
 
@@ -477,7 +478,9 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
 
     val trustManagers = parseTrustManager(c.get[EnrichedConfig]("trustManager"))
 
-    val sslParametersConfig = parseSSLParameters(c.get[EnrichedConfig]("sslParameters"))
+    val sslParametersConfig = parseSSLParameters(
+      c.getOptional[EnrichedConfig]("sslParameters").getOrElse(new EnrichedConfig(ConfigFactory.empty()))
+    )
 
     new SSLConfigSettings(
       default = default,
@@ -504,7 +507,7 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
     val allowMessages               = config.getOptional[Boolean]("allowLegacyHelloMessages")
     val allowUnsafeRenegotiation    = config.getOptional[Boolean]("allowUnsafeRenegotiation")
     val disableHostnameVerification = config.getOptional[Boolean]("disableHostnameVerification").getOrElse(false)
-    val disableSNI                  = config.get[Boolean]("disableSNI")
+    val disableSNI                  = config.getOptional[Boolean]("disableSNI").getOrElse(false)
     val acceptAnyCertificate        = config.get[Boolean]("acceptAnyCertificate")
 
     new SSLLooseConfig(
@@ -626,7 +629,11 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
       case None | Some(_) => ClientAuth.Default
     }
 
-    val protocols = config.getSeq[String]("protocols")
+    val protocols = if (config.underlying.hasPath("protocols")) {
+      config.getSeq[String]("protocols")
+    } else {
+      immutable.Seq.empty[String]
+    }
 
     new SSLParametersConfig(clientAuth, protocols)
   }
