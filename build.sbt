@@ -21,6 +21,16 @@ lazy val sslConfigCore = project
     mimaReportSignatureProblems := true,
     mimaPreviousArtifacts       := Set("com.typesafe" %% "ssl-config-core" % "0.7.0"),
     mimaBinaryIssueFilters ++= Seq(
+      ProblemFilters
+        .exclude[IncompatibleResultTypeProblem]("com.typesafe.sslconfig.ssl.SSLConfigSettings.<init>$default$10"),
+      ProblemFilters
+        .exclude[IncompatibleResultTypeProblem]("com.typesafe.sslconfig.ssl.SSLConfigSettings.<init>$default$11"),
+      ProblemFilters
+        .exclude[IncompatibleResultTypeProblem]("com.typesafe.sslconfig.ssl.SSLConfigSettings.<init>$default$9"),
+      ProblemFilters
+        .exclude[IncompatibleResultTypeProblem]("com.typesafe.sslconfig.ssl.SSLConfigSettings.<init>$default$7"),
+      ProblemFilters
+        .exclude[IncompatibleResultTypeProblem]("com.typesafe.sslconfig.ssl.SSLConfigSettings.<init>$default$8"),
     ),
     libraryDependencies ++= Dependencies.sslConfigCore,
     libraryDependencies ++= Dependencies.testDependencies,
