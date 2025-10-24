@@ -9,6 +9,7 @@ import java.net.URL
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.util.Optional
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.TrustManagerFactory
 
@@ -16,6 +17,7 @@ import scala.collection.immutable
 import scala.language.existentials
 
 import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 import com.typesafe.sslconfig.util.EnrichedConfig
 import com.typesafe.sslconfig.util.LoggerFactory
 
@@ -259,6 +261,8 @@ object SSLDebugConfig {
  *                                 default.
  * @param disableHostnameVerification Whether hostname verification should be disabled. Be aware: SSL Config itself is not using this config.
  *                                    However, it was kept because 3rd party libraries rely on its existence.
+ * @param disableSNI Whether SNI should be disabled (up to client library to respect this setting or not). Be aware: SSL Config itself is not using this config.
+ *                   However, it was kept because 3rd party libraries rely on its existence.
  * @param acceptAnyCertificate Whether any X.509 certificate should be accepted or not.
  */
 final class SSLLooseConfig private[sslconfig] (
@@ -266,30 +270,62 @@ final class SSLLooseConfig private[sslconfig] (
     val allowLegacyHelloMessages: Option[Boolean] = None,
     val allowUnsafeRenegotiation: Option[Boolean] = None,
     val disableHostnameVerification: Boolean = false,
+    val disableSNI: Boolean = false,
 ) {
 
   def withAcceptAnyCertificate(value: Boolean): SSLLooseConfig             = copy(acceptAnyCertificate = value)
   def withAllowLegacyHelloMessages(value: Option[Boolean]): SSLLooseConfig = copy(allowLegacyHelloMessages = value)
   def withAllowUnsafeRenegotiation(value: Option[Boolean]): SSLLooseConfig = copy(allowUnsafeRenegotiation = value)
   def withDisableHostnameVerification(value: Boolean): SSLLooseConfig      = copy(disableHostnameVerification = value)
+  def withDisableSNI(value: Boolean): SSLLooseConfig                       = copy(disableSNI = value)
 
   private def copy(
       acceptAnyCertificate: Boolean = acceptAnyCertificate,
       allowLegacyHelloMessages: Option[Boolean] = allowLegacyHelloMessages,
       allowUnsafeRenegotiation: Option[Boolean] = allowUnsafeRenegotiation,
       disableHostnameVerification: Boolean = disableHostnameVerification,
+      disableSNI: Boolean = disableSNI,
   ): SSLLooseConfig = new SSLLooseConfig(
     acceptAnyCertificate = acceptAnyCertificate,
     allowLegacyHelloMessages = allowLegacyHelloMessages,
     allowUnsafeRenegotiation = allowUnsafeRenegotiation,
     disableHostnameVerification = disableHostnameVerification,
+    disableSNI = disableSNI,
   )
 
   override def toString =
-    s"""SSLLooseConfig(${acceptAnyCertificate},${allowLegacyHelloMessages},${allowUnsafeRenegotiation},${disableHostnameVerification})"""
+    s"""SSLLooseConfig(${acceptAnyCertificate},${allowLegacyHelloMessages},${allowUnsafeRenegotiation},${disableHostnameVerification},${disableSNI})"""
 }
 object SSLLooseConfig {
   def apply() = new SSLLooseConfig()
+
+  /** Java API */
+  def getInstance() = apply()
+}
+
+/**
+ * Carries values which will be later set on an [[javax.net.ssl.SSLParameters]] object.
+ *
+ * @param clientAuth see [[ClientAuth]] for detailed docs on ClientAuth modes
+ */
+final class SSLParametersConfig private[sslconfig] (
+    val clientAuth: ClientAuth = ClientAuth.Default,
+    val protocols: scala.collection.immutable.Seq[String] = Nil
+) {
+
+  def withClientAuth(value: com.typesafe.sslconfig.ssl.ClientAuth): SSLParametersConfig = copy(clientAuth = value)
+  def withProtocols(value: scala.collection.immutable.Seq[String]): SSLParametersConfig = copy(protocols = value)
+
+  private def copy(
+      clientAuth: com.typesafe.sslconfig.ssl.ClientAuth = clientAuth,
+      protocols: scala.collection.immutable.Seq[String] = protocols
+  ): SSLParametersConfig = new SSLParametersConfig(clientAuth = clientAuth, protocols = protocols)
+
+  override def toString =
+    s"""SSLParametersConfig(${clientAuth},${protocols})"""
+}
+object SSLParametersConfig {
+  def apply() = new SSLParametersConfig()
 
   /** Java API */
   def getInstance() = apply()
@@ -304,8 +340,12 @@ object SSLLooseConfig {
  * @param revocationLists The revocation lists to check.
  * @param enabledCipherSuites If defined, override the platform default cipher suites.
  * @param enabledProtocols If defined, override the platform default protocols.
+ * @param sslParametersConfig Be aware: SSL Config itself is not using this config.
+ *                            However, it was kept because 3rd party libraries rely on its existence.
  * @param keyManagerConfig The key manager configuration.
  * @param trustManagerConfig The trust manager configuration.
+ * @param hostnameVerifierClass The hostname verifier class. Be aware: SSL Config itself is not using this config.
+ *                              However, it was kept because 3rd party libraries rely on its existence.
  * @param secureRandom The SecureRandom instance to use. Let the platform choose if None.
  * @param debug The debug config.
  * @param loose Loose configuratino parameters
@@ -317,8 +357,10 @@ final class SSLConfigSettings private[sslconfig] (
     val revocationLists: Option[immutable.Seq[URL]] = None,
     val enabledCipherSuites: Option[immutable.Seq[String]] = None,
     val enabledProtocols: Option[immutable.Seq[String]] = Some(List("TLSv1.3", "TLSv1.2")),
+    val sslParametersConfig: SSLParametersConfig = SSLParametersConfig(),
     val keyManagerConfig: KeyManagerConfig = KeyManagerConfig(),
     val trustManagerConfig: TrustManagerConfig = TrustManagerConfig(),
+    val hostnameVerifierClass: Class[? <: HostnameVerifier] = classOf[NoopHostnameVerifier],
     val secureRandom: Option[SecureRandom] = None,
     val debug: SSLDebugConfig = SSLDebugConfig(),
     val loose: SSLLooseConfig = SSLLooseConfig()
@@ -331,13 +373,17 @@ final class SSLConfigSettings private[sslconfig] (
     copy(enabledCipherSuites = value)
   def withEnabledProtocols(value: Option[scala.collection.immutable.Seq[String]]): SSLConfigSettings =
     copy(enabledProtocols = value)
+  def withHostnameVerifierClass(value: Class[? <: javax.net.ssl.HostnameVerifier]): SSLConfigSettings =
+    copy(hostnameVerifierClass = value)
   def withKeyManagerConfig(value: com.typesafe.sslconfig.ssl.KeyManagerConfig): SSLConfigSettings =
     copy(keyManagerConfig = value)
   def withLoose(value: com.typesafe.sslconfig.ssl.SSLLooseConfig): SSLConfigSettings                      = copy(loose = value)
   def withProtocol(value: String): SSLConfigSettings                                                      = copy(protocol = value)
   def withRevocationLists(value: Option[scala.collection.immutable.Seq[java.net.URL]]): SSLConfigSettings =
     copy(revocationLists = value)
-  def withSecureRandom(value: Option[java.security.SecureRandom]): SSLConfigSettings                  = copy(secureRandom = value)
+  def withSecureRandom(value: Option[java.security.SecureRandom]): SSLConfigSettings                    = copy(secureRandom = value)
+  def withSslParametersConfig(value: com.typesafe.sslconfig.ssl.SSLParametersConfig): SSLConfigSettings =
+    copy(sslParametersConfig = value)
   def withTrustManagerConfig(value: com.typesafe.sslconfig.ssl.TrustManagerConfig): SSLConfigSettings =
     copy(trustManagerConfig = value)
 
@@ -347,11 +393,13 @@ final class SSLConfigSettings private[sslconfig] (
       default: Boolean = default,
       enabledCipherSuites: Option[scala.collection.immutable.Seq[String]] = enabledCipherSuites,
       enabledProtocols: Option[scala.collection.immutable.Seq[String]] = enabledProtocols,
+      hostnameVerifierClass: Class[? <: javax.net.ssl.HostnameVerifier] = hostnameVerifierClass,
       keyManagerConfig: com.typesafe.sslconfig.ssl.KeyManagerConfig = keyManagerConfig,
       loose: com.typesafe.sslconfig.ssl.SSLLooseConfig = loose,
       protocol: String = protocol,
       revocationLists: Option[scala.collection.immutable.Seq[java.net.URL]] = revocationLists,
       secureRandom: Option[java.security.SecureRandom] = secureRandom,
+      sslParametersConfig: com.typesafe.sslconfig.ssl.SSLParametersConfig = sslParametersConfig,
       trustManagerConfig: com.typesafe.sslconfig.ssl.TrustManagerConfig = trustManagerConfig
   ): SSLConfigSettings = new SSLConfigSettings(
     checkRevocation = checkRevocation,
@@ -359,16 +407,18 @@ final class SSLConfigSettings private[sslconfig] (
     default = default,
     enabledCipherSuites = enabledCipherSuites,
     enabledProtocols = enabledProtocols,
+    hostnameVerifierClass = hostnameVerifierClass,
     keyManagerConfig = keyManagerConfig,
     loose = loose,
     protocol = protocol,
     revocationLists = revocationLists,
     secureRandom = secureRandom,
+    sslParametersConfig = sslParametersConfig,
     trustManagerConfig = trustManagerConfig
   )
 
   override def toString =
-    s"""SSLConfig(${checkRevocation},${debug},${default},${enabledCipherSuites},${enabledProtocols},${keyManagerConfig},${loose},${protocol},${revocationLists},${secureRandom},${trustManagerConfig})"""
+    s"""SSLConfig(${checkRevocation},${debug},${default},${enabledCipherSuites},${enabledProtocols},${hostnameVerifierClass},${keyManagerConfig},${loose},${protocol},${revocationLists},${secureRandom},${sslParametersConfig},${trustManagerConfig})"""
 }
 object SSLConfigSettings {
   def apply() = new SSLConfigSettings()
@@ -419,9 +469,18 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
     val ciphers   = Some(c.getSeq[String]("enabledCipherSuites")).filter(_.nonEmpty)
     val protocols = Some(c.getSeq[String]("enabledProtocols")).filter(_.nonEmpty)
 
+    val hostnameVerifierClass = c.getOptional[String]("hostnameVerifierClass") match {
+      case None       => classOf[NoopHostnameVerifier]
+      case Some(fqcn) => classLoader.loadClass(fqcn).asSubclass(classOf[HostnameVerifier])
+    }
+
     val keyManagers = parseKeyManager(c.get[EnrichedConfig]("keyManager"))
 
     val trustManagers = parseTrustManager(c.get[EnrichedConfig]("trustManager"))
+
+    val sslParametersConfig = parseSSLParameters(
+      c.getOptional[EnrichedConfig]("sslParameters").getOrElse(new EnrichedConfig(ConfigFactory.empty()))
+    )
 
     new SSLConfigSettings(
       default = default,
@@ -431,6 +490,8 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
       enabledCipherSuites = ciphers,
       enabledProtocols = protocols,
       keyManagerConfig = keyManagers,
+      hostnameVerifierClass = hostnameVerifierClass,
+      sslParametersConfig = sslParametersConfig,
       trustManagerConfig = trustManagers,
       secureRandom = None,
       debug = debug,
@@ -446,12 +507,14 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
     val allowMessages               = config.getOptional[Boolean]("allowLegacyHelloMessages")
     val allowUnsafeRenegotiation    = config.getOptional[Boolean]("allowUnsafeRenegotiation")
     val disableHostnameVerification = config.getOptional[Boolean]("disableHostnameVerification").getOrElse(false)
+    val disableSNI                  = config.getOptional[Boolean]("disableSNI").getOrElse(false)
     val acceptAnyCertificate        = config.get[Boolean]("acceptAnyCertificate")
 
     new SSLLooseConfig(
       allowLegacyHelloMessages = allowMessages,
       allowUnsafeRenegotiation = allowUnsafeRenegotiation,
       disableHostnameVerification = disableHostnameVerification,
+      disableSNI = disableSNI,
       acceptAnyCertificate = acceptAnyCertificate
     )
   }
@@ -555,4 +618,45 @@ class SSLConfigParser(c: EnrichedConfig, classLoader: ClassLoader, loggerFactory
 
     new TrustManagerConfig(algorithm, trustStoreInfos)
   }
+
+  def parseSSLParameters(config: EnrichedConfig): SSLParametersConfig = {
+    // could instantiate SSLParameters directly, but seems less clean, here we only parse config
+
+    val clientAuth = config.getOptional[String]("clientAuth") match {
+      case Some("none")   => ClientAuth.None
+      case Some("want")   => ClientAuth.Want
+      case Some("need")   => ClientAuth.Need
+      case None | Some(_) => ClientAuth.Default
+    }
+
+    val protocols = if (config.underlying.hasPath("protocols")) {
+      config.getSeq[String]("protocols")
+    } else {
+      immutable.Seq.empty[String]
+    }
+
+    new SSLParametersConfig(clientAuth, protocols)
+  }
+}
+
+/**
+ * An SSLEngine can either demand, allow or ignore its peer’s authentication
+ * (via certificates), where `Need` will fail the handshake if the peer does
+ * not provide valid credentials, `Want` allows the peer to send credentials
+ * and verifies them if provided, and `None` disables peer certificate
+ * verification.
+ *
+ * See the documentation for `SSLEngine::setWantClientAuth` for more information.
+ */
+sealed abstract class ClientAuth
+object ClientAuth {
+  case object Default extends ClientAuth
+  case object None    extends ClientAuth
+  case object Want    extends ClientAuth
+  case object Need    extends ClientAuth
+
+  def none: ClientAuth        = None
+  def want: ClientAuth        = Want
+  def need: ClientAuth        = Need
+  def defaultAuth: ClientAuth = Default // since `default` is a Java keyword
 }
